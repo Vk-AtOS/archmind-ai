@@ -1,0 +1,49 @@
+name: archmind
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: archmind
+      POSTGRES_PASSWORD: archmind
+      POSTGRES_DB: archmind
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U archmind"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ../apps/api
+    env_file: [../.env.example]
+    environment:
+      ARCHMIND_DATABASE_URL: postgresql+psycopg://archmind:archmind@postgres:5432/archmind
+      ARCHMIND_REDIS_URL: redis://redis:6379/0
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 5s
+      retries: 10
+
+  web:
+    build: ../apps/web
+    environment:
+      API_URL: http://api:8000
+    ports: ["3000:3000"]
+    depends_on:
+      api: {condition: service_healthy}
+
+volumes:
+  pgdata:
