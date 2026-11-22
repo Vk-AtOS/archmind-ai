@@ -7,7 +7,8 @@ services:
       POSTGRES_USER: archmind
       POSTGRES_PASSWORD: archmind
       POSTGRES_DB: archmind
-    ports: ["5432:5432"]
+    # Loopback only; 55432 avoids clashing with a host Postgres on 5432.
+    ports: ["127.0.0.1:55432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U archmind"]
@@ -16,7 +17,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
+    # No host port: only containers on the compose network reach it.
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
