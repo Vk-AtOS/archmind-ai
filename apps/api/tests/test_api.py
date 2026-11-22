@@ -52,12 +52,32 @@ def test_login_logout_and_session_required(client: TestClient) -> None:
     assert a.get("/api/v1/me").status_code == 401
 
 
-def test_wrong_password_then_lockout(client: TestClient) -> None:
+def test_lockout_is_per_address_so_attackers_cannot_lock_out_victims(client: TestClient) -> None:
     _, email = org_admin(client)
-    c = TestClient(client.app)
+    attacker = TestClient(client.app, client=("203.0.113.9", 4000))
     for _ in range(5):
-        assert c.post("/api/v1/auth/login", json={"email": email, "password": "nope"}).status_code == 401
-    assert c.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429
+        r = attacker.post("/api/v1/auth/login", json={"email": email, "password": "nope"})
+        assert r.status_code == 401
+    assert attacker.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429
+    victim = TestClient(client.app, client=("198.51.100.7", 5000))
+    assert victim.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 200
+
+
+def test_unknown_email_and_wrong_password_look_the_same(client: TestClient) -> None:
+    _, email = org_admin(client)
+    c = TestClient(client.app, client=("192.0.2.1", 1))
+    a = c.post("/api/v1/auth/login", json={"email": email, "password": "nope"})
+    b = c.post("/api/v1/auth/login", json={"email": "nobody@example.com", "password": "nope"})
+    assert (a.status_code, a.json()) == (b.status_code, b.json())
+
+
+def test_oversized_brief_is_rejected(client: TestClient) -> None:
+    a, _ = org_admin(client)
+    pr = a.post("/api/v1/projects", json={"name": "Big"}).json()
+    many = {**BRIEF, "rooms": [{"type": "bedroom"}] * 11 + BRIEF["rooms"]}
+    assert a.post(f"/api/v1/projects/{pr['id']}/briefs", json=many).status_code == 422
+    huge = {**BRIEF, "rooms": [{"type": "living", "target_area_m2": 10_000}, *BRIEF["rooms"][1:]]}
+    assert a.post(f"/api/v1/projects/{pr['id']}/briefs", json=huge).status_code == 422
 
 
 def test_full_flow_brief_to_options_and_exports(client: TestClient) -> None:

@@ -1,7 +1,7 @@
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -10,6 +10,7 @@ from archmind.db import get_db
 from archmind.models import AuditEvent, AuthSession, LoginAttempt, Membership, User
 from archmind.security import (
     COOKIE,
+    DUMMY_HASH,
     Principal,
     audit,
     cookie_kwargs,
@@ -46,18 +47,21 @@ class UserIn(BaseModel):
 
 
 @router.post("/auth/login", response_model=Me)
-def login(body: LoginIn, response: Response, db: Session = Depends(get_db)) -> Me:
+def login(body: LoginIn, request: Request, response: Response, db: Session = Depends(get_db)) -> Me:
     email = body.email.lower()
-    if locked_out(db, email):
+    ip = request.client.host if request.client else "unknown"
+    if locked_out(db, email, ip):
         raise HTTPException(429, "too many failed attempts; try again in 15 minutes")
     user = db.scalar(select(User).where(User.email == email))
     m = db.scalar(select(Membership).where(Membership.user_id == user.id)) if user else None
-    if user is None or not user.active or m is None or not verify_password(user.password_hash, body.password):
-        db.add(LoginAttempt(email=email, ok=False))
+    # Always run one argon2 verify so unknown emails take as long as wrong passwords.
+    ok = verify_password(user.password_hash if user else DUMMY_HASH, body.password)
+    if user is None or not user.active or m is None or not ok:
+        db.add(LoginAttempt(email=email, ip=ip, ok=False))
         audit(db, "auth.login_failed", None, None, email)
         db.commit()
         raise HTTPException(401, "wrong email or password")
-    db.add(LoginAttempt(email=email, ok=True))
+    db.add(LoginAttempt(email=email, ip=ip, ok=True))
     token = new_session(db, user.id, m.org_id)
     audit(db, "auth.login", m.org_id, user.id)
     db.commit()

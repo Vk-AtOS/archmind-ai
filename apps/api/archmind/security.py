@@ -18,9 +18,12 @@ from archmind.models import AuditEvent, AuthSession, LoginAttempt, Membership, U
 
 COOKIE = "am_session"
 SESSION_TTL = timedelta(hours=12)
-MAX_FAILURES = 5
+MAX_FAILURES_PER_IP = 5  # per account and client address: stops guessing from one place
+MAX_FAILURES_PER_ACCOUNT = 50  # all addresses: slows distributed guessing without letting one
+# attacker lock a victim out with five bad passwords.
 LOCKOUT = timedelta(minutes=15)
 _ph = PasswordHasher()
+DUMMY_HASH = _ph.hash("timing-equaliser-not-a-real-password")
 
 # Write permissions per role; every role can read within its organisation.
 CAN = {
@@ -45,12 +48,14 @@ def _digest(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
 
 
-def locked_out(db: Session, email: str) -> bool:
+def locked_out(db: Session, email: str, ip: str) -> bool:
+    # ponytail: count-then-insert is not atomic, so a burst can exceed the limit by a few tries;
+    # use a per-key counter (Redis INCR) if that margin ever matters.
     since = utcnow() - LOCKOUT
-    q = select(func.count()).where(
-        LoginAttempt.email == email, LoginAttempt.ok.is_(False), LoginAttempt.at > since
-    )
-    return (db.scalar(q) or 0) >= MAX_FAILURES
+    failed = (LoginAttempt.email == email, LoginAttempt.ok.is_(False), LoginAttempt.at > since)
+    per_ip = db.scalar(select(func.count()).where(*failed, LoginAttempt.ip == ip)) or 0
+    per_account = db.scalar(select(func.count()).where(*failed)) or 0
+    return per_ip >= MAX_FAILURES_PER_IP or per_account >= MAX_FAILURES_PER_ACCOUNT
 
 
 def new_session(db: Session, user_id: uuid.UUID, org_id: uuid.UUID) -> str:

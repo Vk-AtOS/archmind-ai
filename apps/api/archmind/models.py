@@ -58,6 +58,7 @@ class LoginAttempt(Base):
     __table_args__ = (Index("ix_login_attempts_email_at", "email", "at"),)
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=_id)
     email: Mapped[str] = mapped_column(String(320))
+    ip: Mapped[str] = mapped_column(String(64), default="")
     ok: Mapped[bool]
     at: Mapped[datetime] = mapped_column(default=utcnow)
 

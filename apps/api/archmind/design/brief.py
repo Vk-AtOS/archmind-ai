@@ -26,7 +26,7 @@ class Setbacks(BaseModel):
 class RoomRequest(BaseModel):
     type: RoomType
     count: int = Field(default=1, ge=1, le=6)
-    target_area_m2: float | None = Field(default=None, gt=0)
+    target_area_m2: float | None = Field(default=None, ge=1, le=200)
 
 
 class DesignBrief(BaseModel):
@@ -34,7 +34,7 @@ class DesignBrief(BaseModel):
     plot_depth_m: float = Field(gt=0, le=100)
     setbacks: Setbacks
     floors: Literal[1, 2] = 1
-    rooms: list[RoomRequest] = Field(min_length=1)
+    rooms: list[RoomRequest] = Field(min_length=1, max_length=10)
     rule_pack: str = "generic-metric-v0"
 
     @property
