@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f infra/docker-compose.yml
 
-.PHONY: setup up down logs test lint smoke admin
+.PHONY: setup up down logs test lint smoke admin e2e
 
 setup:
 	cd apps/api && uv sync
@@ -28,3 +28,6 @@ smoke:
 
 admin:
 	$(COMPOSE) exec api uv run --no-dev python -m archmind.cli create-admin "$(ORG)" "$(EMAIL)" "$(NAME)"
+
+e2e:
+	./scripts/e2e.sh

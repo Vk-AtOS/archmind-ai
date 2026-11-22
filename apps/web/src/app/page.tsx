@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const dynamic = "force-dynamic";
 
 async function apiStatus(): Promise<string> {
@@ -15,10 +17,17 @@ async function apiStatus(): Promise<string> {
 export default async function Home() {
   const status = await apiStatus();
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="text-2xl font-semibold">ArchMind</h1>
-      <p className="mt-2 text-gray-600">Plot and brief to a checked house design with a build cost.</p>
-      <p className="mt-6 text-sm" data-testid="api-status">{status}</p>
+    <main className="mx-auto mt-24 max-w-xl px-4">
+      <h1 className="text-3xl font-semibold">ArchMind</h1>
+      <p className="mt-2 text-stone-600">
+        Plot and brief to a rule-compliant house design with a build cost, checked and traceable.
+      </p>
+      <Link href="/login" className="btn mt-6">
+        Sign in
+      </Link>
+      <p className="mt-10 text-xs text-stone-400" data-testid="api-status">
+        {status}
+      </p>
     </main>
   );
 }
