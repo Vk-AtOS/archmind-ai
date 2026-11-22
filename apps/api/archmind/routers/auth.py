@@ -13,6 +13,7 @@ from archmind.security import (
     DUMMY_HASH,
     Principal,
     audit,
+    client_key,
     cookie_kwargs,
     current,
     hash_password,
@@ -49,7 +50,7 @@ class UserIn(BaseModel):
 @router.post("/auth/login", response_model=Me)
 def login(body: LoginIn, request: Request, response: Response, db: Session = Depends(get_db)) -> Me:
     email = body.email.lower()
-    ip = request.client.host if request.client else "unknown"
+    ip = client_key(request.client.host if request.client else None)
     if locked_out(db, email, ip):
         raise HTTPException(429, "too many failed attempts; try again in 15 minutes")
     user = db.scalar(select(User).where(User.email == email))

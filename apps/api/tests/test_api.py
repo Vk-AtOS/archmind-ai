@@ -151,3 +151,11 @@ def test_mutations_require_json(client: TestClient) -> None:
         "/api/v1/projects", content="name=x", headers={"content-type": "application/x-www-form-urlencoded"}
     )
     assert r.status_code == 415
+
+
+def test_ipv6_addresses_in_one_network_share_a_throttle_key() -> None:
+    from archmind.security import client_key
+
+    assert client_key("2001:db8::1") == client_key("2001:db8::ffff") == "2001:db8::/64"
+    assert client_key("203.0.113.9") == "203.0.113.9"
+    assert client_key(None) == "unknown"

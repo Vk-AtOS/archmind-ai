@@ -1,6 +1,7 @@
 """Passwords, sessions, login throttling and role checks (ADR-002)."""
 
 import hashlib
+import ipaddress
 import secrets
 import uuid
 from dataclasses import dataclass
@@ -18,10 +19,26 @@ from archmind.models import AuditEvent, AuthSession, LoginAttempt, Membership, U
 
 COOKIE = "am_session"
 SESSION_TTL = timedelta(hours=12)
-MAX_FAILURES_PER_IP = 5  # per account and client address: stops guessing from one place
-MAX_FAILURES_PER_ACCOUNT = 50  # all addresses: slows distributed guessing without letting one
-# attacker lock a victim out with five bad passwords.
+MAX_FAILURES_PER_IP = 5  # per account and client network: stops guessing from one place
+MAX_FAILURES_PER_ACCOUNT = 20  # all networks: caps distributed guessing at 80/hour per account,
+# while one attacker alone can no longer lock a victim out with five bad passwords.
 LOCKOUT = timedelta(minutes=15)
+
+
+def client_key(host: str | None) -> str:
+    """Throttle key: IPv4 address, or the /64 network for IPv6 (one host usually owns a whole /64).
+    Behind a reverse proxy, uvicorn must run with --forwarded-allow-ips set to that proxy only (ARCH-108)."""
+    if not host:
+        return "unknown"
+    try:
+        addr = ipaddress.ip_address(host)
+    except ValueError:
+        return host[:64]
+    if addr.version == 6:
+        return str(ipaddress.ip_network(f"{addr}/64", strict=False))
+    return str(addr)
+
+
 _ph = PasswordHasher()
 DUMMY_HASH = _ph.hash("timing-equaliser-not-a-real-password")
 
