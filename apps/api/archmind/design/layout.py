@@ -14,7 +14,7 @@ from archmind.design.brief import DEFAULT_AREA, DesignBrief
 from archmind.design.geometry import Rect
 from archmind.design.rules import RulePack, load_pack
 
-GENERATOR_VERSION = "0.2.0"
+GENERATOR_VERSION = "0.3.0"
 STAIR_W = 1.2
 STAIR_D = 3.0
 Side = Literal["front", "rear"]
@@ -152,6 +152,17 @@ def _fill_band(band: Rect, rooms: list[tuple[str, str, float]], level: int, door
     return out
 
 
+def _keep_together(band: list[tuple[str, str, float]], a: str, b: str) -> None:
+    """Reorder in place so room type b sits immediately after room type a (shared wall)."""
+    ia = next((i for i, r in enumerate(band) if r[0] == a), None)
+    ib = next((i for i, r in enumerate(band) if r[0] == b), None)
+    if ia is None or ib is None:
+        return
+    room = band.pop(ib)
+    ia = next(i for i, r in enumerate(band) if r[0] == a)
+    band.insert(ia + 1, room)
+
+
 def _floor(
     fp: Rect,
     level: int,
@@ -180,12 +191,23 @@ def _floor(
     # Alternate rooms between bands by area so both bands carry similar load.
     front_rooms: list[tuple[str, str, float]] = []
     rear_rooms: list[tuple[str, str, float]] = []
+    # Kitchen and dining go in the same band, side by side (they share a wall and a door path).
+    pair = {"kitchen", "dining"}
     for r in rooms:
+        if r[0] in pair:
+            partner = next(
+                (b for b in (front_rooms, rear_rooms) if any(x[0] in pair - {r[0]} for x in b)), None
+            )
+            if partner is not None:
+                partner.append(r)
+                continue
         fa = sum(x[2] for x in front_rooms) / max(front.area, 1e-9)
         ra = sum(x[2] for x in rear_rooms) / max(rear.area, 1e-9)
         (front_rooms if fa <= ra else rear_rooms).append(r)
     if not rear_rooms:
         rear_rooms.append(front_rooms.pop())
+    for band in (front_rooms, rear_rooms):
+        _keep_together(band, "kitchen", "dining")
     return Floor(
         level=level,
         footprint=fp,
