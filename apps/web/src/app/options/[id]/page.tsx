@@ -78,6 +78,9 @@ export default function OptionPage() {
           <button className="btn-secondary" onClick={downloadCsv}>
             Estimate CSV
           </button>
+          <a className="btn-secondary" href={`/options/${opt.id}/report`} data-testid="report-link">
+            Report / PDF
+          </a>
         </div>
       </div>
 
