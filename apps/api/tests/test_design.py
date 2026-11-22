@@ -96,3 +96,14 @@ def test_rooms_stay_near_their_target_size(b: DesignBrief) -> None:
     for o in generate(b, n=3):
         for r in (r for f in o.floors for r in f.rooms):
             assert r.rect.area <= 2.5 * r.target_area_m2, (r.name, r.rect.area)
+
+
+@pytest.mark.parametrize("b", BRIEFS, ids=[f"{b.plot_width_m}x{b.plot_depth_m}-G{b.floors}" for b in BRIEFS])
+def test_options_are_genuinely_different(b: DesignBrief) -> None:
+    # Regression: the three options used to be identical apart from room order.
+    opts = generate(b, n=3)
+    layouts = {
+        tuple((r.name, r.rect.x, r.rect.y, r.rect.w, r.rect.d) for f in o.floors for r in f.rooms)
+        for o in opts
+    }
+    assert len(layouts) == 3

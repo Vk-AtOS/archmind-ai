@@ -14,7 +14,7 @@ from archmind.design.brief import DEFAULT_AREA, DesignBrief
 from archmind.design.geometry import Rect
 from archmind.design.rules import RulePack, load_pack
 
-GENERATOR_VERSION = "0.1.0"
+GENERATOR_VERSION = "0.2.0"
 STAIR_W = 1.2
 STAIR_D = 3.0
 Side = Literal["front", "rear"]
@@ -61,7 +61,12 @@ TARGET_DEPTH = 8.0  # preferred depth: bands of ~3.5 m
 NET_RATIO = 0.82  # ponytail: rooms vs gross floor area; tune from partner-rated layouts (ARCH-155)
 
 
-def _footprint(brief: DesignBrief, pack: RulePack, per_floor: list[list[tuple[str, str, float]]]) -> Rect:
+def _footprint(
+    brief: DesignBrief,
+    pack: RulePack,
+    per_floor: list[list[tuple[str, str, float]]],
+    target_depth: float = TARGET_DEPTH,
+) -> Rect:
     """Footprint sized to the largest floor's room programme: width first (so wide plots do not
     stretch rooms), then depth, capped by setbacks, coverage and floor-area ratio."""
     bw, bd = brief.buildable_width, brief.buildable_depth
@@ -73,7 +78,7 @@ def _footprint(brief: DesignBrief, pack: RulePack, per_floor: list[list[tuple[st
         pack.value("coverage.max", 1.0) * plot_area,
         pack.value("far.max", 99.0) * plot_area / brief.floors,
     )
-    width = min(bw, need / TARGET_DEPTH)
+    width = min(bw, need / target_depth)
     depth = min(max(need / width, MIN_FOOTPRINT_DEPTH), max_fp / width, bd)
     return Rect(x=brief.setbacks.left, y=brief.setbacks.front, w=round(width, 2), d=round(depth, 2))
 
@@ -215,31 +220,74 @@ def _score(opt: LayoutOption) -> Score:
     )
 
 
-def generate(brief: DesignBrief, n: int = 3, seed: int = 0, attempts: int = 60) -> list[LayoutOption]:
-    """Return up to n distinct options that pass every hard rule, best score first."""
+def _mirror(floor: Floor) -> Floor:
+    """Flip a floor left-right inside its footprint (stair and wet wall move to the other side)."""
+    fp = floor.footprint
+
+    def flip(r: Rect) -> Rect:
+        return Rect(x=round(2 * fp.x + fp.w - r.x - r.w, 2), y=r.y, w=r.w, d=r.d)
+
+    rooms = [r.model_copy(update={"rect": flip(r.rect)}) for r in floor.rooms]
+    return floor.model_copy(
+        update={
+            "rooms": rooms,
+            "corridor": flip(floor.corridor) if floor.corridor else None,
+            "stair": flip(floor.stair) if floor.stair else None,
+        }
+    )
+
+
+def _signature(opt: LayoutOption, mirrored: bool) -> tuple[object, ...]:
+    """What makes two options genuinely different to a client: proportions, which rooms face the
+    road, and which side the stair/wet wall is on."""
+    g = opt.floors[0]
+    front = tuple(sorted(r.type for r in g.rooms if abs(r.rect.y - g.footprint.y) < 1e-6))
+    return (g.footprint.w, g.footprint.d, front, mirrored)
+
+
+def generate(brief: DesignBrief, n: int = 3, seed: int = 0, attempts: int = 90) -> list[LayoutOption]:
+    """Return up to n options that pass every hard rule and differ in a meaningful way
+    (best per signature), best score first."""
     from archmind.design.checks import hard_failures  # local import: checks imports layout types
 
     pack = load_pack(brief.rule_pack)
     per_floor = _split_floors(_room_list(brief), brief.floors)
-    fp = _footprint(brief, pack, per_floor)
     corridor_w = pack.value("corridor.width.min", 1.0)
     plot = Rect(x=0, y=0, w=brief.plot_width_m, d=brief.plot_depth_m)
-    valid: dict[str, LayoutOption] = {}
+    found: dict[str, tuple[float, int, tuple[object, ...], LayoutOption]] = {}
     for k in range(attempts):
         rng = random.Random(seed * 10_000 + k)
+        fp = _footprint(brief, pack, per_floor, rng.choice([7.5, 8.5, 9.5]))
         split = rng.choice([0.45, 0.5, 0.55, 0.6])
+        mirrored = rng.random() < 0.5
         floors = [
             _floor(fp, lvl, rooms, split, rng, corridor_w, stair=brief.floors > 1)
             for lvl, rooms in enumerate(per_floor)
         ]
+        if mirrored:
+            floors = [_mirror(f) for f in floors]
         opt = LayoutOption(id="", seed=seed * 10_000 + k, rule_pack=pack.id, plot=plot, floors=floors)
         if hard_failures(opt, brief, pack):
             continue
-        key = "|".join(f"{r.id}@{r.rect.x},{r.rect.y},{r.rect.w}" for f in floors for r in f.rooms)
-        if key not in valid:
-            opt.score = _score(opt)
-            valid[key] = opt
-    ranked = sorted(valid.values(), key=lambda o: (-(o.score.total if o.score else 0), o.seed))[:n]
+        score = _score(opt)
+        opt.score = score
+        key = "|".join(
+            f"{r.name}@{r.rect.x},{r.rect.y},{r.rect.w},{r.rect.d}" for f in floors for r in f.rooms
+        )
+        if key not in found:
+            found[key] = (score.total, opt.seed, _signature(opt, mirrored), opt)
+    by_score = sorted(found.values(), key=lambda t: (-t[0], t[1]))
+    # Fill n slots in passes: first options that differ in proportions or road-facing rooms, then
+    # mirror images, then any other distinct layout.
+    picked: list[tuple[tuple[object, ...], LayoutOption]] = []
+    for depth in (3, 4, 0):  # 0 = no diversity requirement
+        for _, _, sig, o in by_score:
+            if len(picked) >= n or any(o is p for _, p in picked):
+                continue
+            if depth and any(s[:depth] == sig[:depth] for s, _ in picked):
+                continue
+            picked.append((sig, o))
+    ranked = [o for _, o in picked]
     for i, o in enumerate(ranked):
         o.id = f"option-{i + 1}"
     return ranked
