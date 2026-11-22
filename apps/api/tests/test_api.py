@@ -170,3 +170,11 @@ def test_account_wide_cap_does_not_lock_user_out_of_known_network(client: TestCl
     assert stranger.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429
     known = TestClient(client.app)
     assert known.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 200
+    # Once capped, new networks are refused before a failure is recorded, so outsiders cannot
+    # push the count towards the trusted allowance; an attacker on the trusted network itself
+    # still gets only 5 tries.
+    late = TestClient(client.app, client=("203.0.113.200", 1))
+    assert late.post("/api/v1/auth/login", json={"email": email, "password": "nope"}).status_code == 429
+    for _ in range(5):
+        known.post("/api/v1/auth/login", json={"email": email, "password": "nope"})
+    assert known.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429

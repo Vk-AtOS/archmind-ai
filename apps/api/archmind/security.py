@@ -74,20 +74,22 @@ def locked_out(db: Session, email: str, ip: str) -> bool:
     per_ip = db.scalar(select(func.count()).where(*failed, LoginAttempt.ip == ip)) or 0
     if per_ip >= MAX_FAILURES_PER_IP:
         return True
-    # A network this user signed in from recently is trusted: the account-wide cap (which an
-    # attacker could trigger) does not lock the real user out of their usual network.
-    trusted = db.scalar(
-        select(func.count()).where(
-            LoginAttempt.email == email,
-            LoginAttempt.ip == ip,
-            LoginAttempt.ok.is_(True),
-            LoginAttempt.at > utcnow() - TRUSTED_FOR,
+    # A network this user signed in from recently gets double the account-wide allowance, so an
+    # attacker spraying from elsewhere does not lock the real user out of their usual network
+    # first. ponytail: network-based trust; a signed known-device cookie is stronger (ARCH-27 follow-up).
+    trusted = ip != "unknown" and bool(
+        db.scalar(
+            select(func.count()).where(
+                LoginAttempt.email == email,
+                LoginAttempt.ip == ip,
+                LoginAttempt.ok.is_(True),
+                LoginAttempt.at > utcnow() - TRUSTED_FOR,
+            )
         )
     )
-    if trusted:
-        return False
+    cap = MAX_FAILURES_PER_ACCOUNT * (2 if trusted else 1)
     per_account = db.scalar(select(func.count()).where(*failed)) or 0
-    return per_account >= MAX_FAILURES_PER_ACCOUNT
+    return per_account >= cap
 
 
 def new_session(db: Session, user_id: uuid.UUID, org_id: uuid.UUID) -> str:
