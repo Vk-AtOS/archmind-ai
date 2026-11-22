@@ -1,0 +1,27 @@
+{
+  "id": "generic-metric-v0",
+  "version": "0.1.0",
+  "jurisdiction": "generic (no city chosen yet, ARCH-140)",
+  "units": "m",
+  "status_note": "Every rule is provisional: plausible metric defaults, not taken from any bylaw.",
+  "rules": [
+    {"id": "setback.front.min", "value": 3.0, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "setback.rear.min", "value": 1.5, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "setback.side.min", "value": 1.0, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "coverage.max", "value": 0.65, "unit": "ratio", "status": "provisional", "source": "placeholder"},
+    {"id": "far.max", "value": 1.75, "unit": "ratio", "status": "provisional", "source": "placeholder"},
+    {"id": "floors.max", "value": 2, "unit": "count", "status": "provisional", "source": "placeholder"},
+    {"id": "room.bedroom.area.min", "value": 9.5, "unit": "m2", "status": "provisional", "source": "placeholder"},
+    {"id": "room.bedroom.width.min", "value": 2.7, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "room.living.area.min", "value": 12.0, "unit": "m2", "status": "provisional", "source": "placeholder"},
+    {"id": "room.living.width.min", "value": 3.0, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "room.kitchen.area.min", "value": 5.0, "unit": "m2", "status": "provisional", "source": "placeholder"},
+    {"id": "room.kitchen.width.min", "value": 1.8, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "room.bathroom.area.min", "value": 2.8, "unit": "m2", "status": "provisional", "source": "placeholder"},
+    {"id": "room.bathroom.width.min", "value": 1.2, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "room.dining.area.min", "value": 7.5, "unit": "m2", "status": "provisional", "source": "placeholder"},
+    {"id": "room.dining.width.min", "value": 2.4, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "corridor.width.min", "value": 1.0, "unit": "m", "status": "provisional", "source": "placeholder"},
+    {"id": "stair.width.min", "value": 0.9, "unit": "m", "status": "provisional", "source": "placeholder"}
+  ]
+}
