@@ -1,0 +1,8 @@
+# city=generic;currency=INR;status=sample;source=illustrative placeholder rates, not market data (ARCH-153)
+item_id,description,unit,rate,currency
+masonry_volume,Brick masonry in cement mortar,m3,6500,INR
+slab_volume,RCC slab incl. reinforcement and shuttering,m3,9500,INR
+flooring_area,Vitrified tile flooring,m2,1100,INR
+plaster_area,Cement plaster 12 mm,m2,350,INR
+door_count,Flush door with frame and hardware,no,14000,INR
+window_count,Aluminium window with glazing,no,11000,INR
