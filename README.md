@@ -1,5 +1,5 @@
 # ArchMind AI
-Plot and brief to a rule-compliant house design with a build cost. Private repository.
+Plot and brief to a rule-compliant house design with a build cost. Source is visible; all rights reserved (see LICENSE).
 
 Specs and decisions: Confluence space ARCHMIND (start with "Strategy v2: Analyze, Suggest, Build (ADOPTED)" and "Execution Roadmap (v0)"). Work: Jira project ARCH, `labels = v0`.
 
@@ -16,6 +16,7 @@ Specs and decisions: Confluence space ARCHMIND (start with "Strategy v2: Analyze
 | `make up` / `make down` | start / stop the local stack (Docker Desktop must be running) |
 | `make smoke` | check API health and that the web page reaches the API |
 | `make lint` | ruff, mypy, eslint, tsc |
-| `make test` | API tests |
+| `make test` | API tests (needs `make up` for Postgres) |
+| `make admin ORG=... EMAIL=... NAME=...` | create the first organisation and admin (prompts for the password) |
 
 Web: http://localhost:3000 · API: http://localhost:8000/api/v1/health

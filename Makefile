@@ -1,6 +1,6 @@
 COMPOSE = docker compose -f infra/docker-compose.yml
 
-.PHONY: setup up down logs test lint smoke
+.PHONY: setup up down logs test lint smoke admin
 
 setup:
 	cd apps/api && uv sync
@@ -23,4 +23,8 @@ test:
 	cd apps/api && uv run pytest -q
 
 smoke:
-	curl -fsS localhost:8000/api/v1/health && curl -fsS localhost:3000 | grep -q 'API ok'
+	curl -fsS --retry 5 --retry-all-errors --retry-delay 1 localhost:8000/api/v1/health
+	curl -fsS --retry 5 --retry-all-errors --retry-delay 1 localhost:3000 | grep -q 'API ok'
+
+admin:
+	$(COMPOSE) exec api uv run --no-dev python -m archmind.cli create-admin "$(ORG)" "$(EMAIL)" "$(NAME)"
