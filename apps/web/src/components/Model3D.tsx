@@ -18,7 +18,25 @@ const COLOURS: Record<string, number> = {
   bathroom: 0xd5e8e8,
 };
 
-export default function Model3D({ layout }: { layout: Layout }) {
+function label(text: string): THREE.Sprite {
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 64;
+  const g = c.getContext("2d")!;
+  g.fillStyle = "rgba(255,255,255,0.85)";
+  g.fillRect(0, 8, 256, 48);
+  g.fillStyle = "#1c1917";
+  g.font = "28px system-ui, sans-serif";
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillText(text, 128, 32);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+  sprite.scale.set(2.4, 0.6, 1);
+  return sprite;
+}
+
+/** level: a floor index shows that floor alone with cut-away walls; "all" stacks every floor. */
+export default function Model3D({ layout, level = "all" }: { layout: Layout; level?: number | "all" }) {
   const host = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,7 +64,8 @@ export default function Model3D({ layout }: { layout: Layout }) {
     scene.add(ground);
 
     const wallMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    for (const floor of layout.floors) {
+    const shown = level === "all" ? layout.floors : layout.floors.filter((f) => f.level === level);
+    for (const floor of shown) {
       const y0 = floor.level * STOREY;
       for (const r of floor.rooms) {
         const slab = new THREE.Mesh(
@@ -55,8 +74,14 @@ export default function Model3D({ layout }: { layout: Layout }) {
         );
         slab.position.set(r.rect.x + r.rect.w / 2, y0, r.rect.y + r.rect.d / 2);
         scene.add(slab);
-        // Room outline walls (cut-away height on the top floor so rooms stay visible).
-        const h = floor.level === layout.floors.length - 1 ? 1.2 : STOREY;
+        // Cut-away walls on the floor being looked at, full height below it.
+        const top = level === "all" ? layout.floors.length - 1 : level;
+        const h = floor.level === top ? 1.2 : STOREY;
+        if (floor.level === top) {
+          const tag = label(r.name);
+          tag.position.set(r.rect.x + r.rect.w / 2, y0 + 1.8, r.rect.y + r.rect.d / 2);
+          scene.add(tag);
+        }
         const { x, y, w, d } = r.rect;
         for (const [cx, cz, sx, sz] of [
           [x + w / 2, y, w, WALL],
@@ -72,8 +97,10 @@ export default function Model3D({ layout }: { layout: Layout }) {
     }
 
     const fp = layout.floors[0].footprint;
-    const centre = new THREE.Vector3(fp.x + fp.w / 2, (layout.floors.length * STOREY) / 2, fp.y + fp.d / 2);
-    camera.position.set(centre.x + 14, 16, centre.z - 14);
+    const centreY = level === "all" ? (layout.floors.length * STOREY) / 2 : level * STOREY;
+    const centre = new THREE.Vector3(fp.x + fp.w / 2, centreY, fp.y + fp.d / 2);
+    const dist = Math.max(fp.w, fp.d) * 1.3 + 4; // frame the building, not the whole plot
+    camera.position.set(centre.x + dist * 0.7, centre.y + dist, centre.z - dist * 0.7);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.copy(centre);
     controls.update();
@@ -93,11 +120,14 @@ export default function Model3D({ layout }: { layout: Layout }) {
         if (o instanceof THREE.Mesh) {
           o.geometry.dispose();
           (o.material as THREE.Material).dispose();
+        } else if (o instanceof THREE.Sprite) {
+          o.material.map?.dispose();
+          o.material.dispose();
         }
       });
       el.removeChild(renderer.domElement);
     };
-  }, [layout]);
+  }, [layout, level]);
 
   return (
     <div>
