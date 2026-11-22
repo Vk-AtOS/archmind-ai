@@ -1,6 +1,6 @@
 """IFC4 model generator (ARCH-149). Deterministic GlobalIds; walls, slabs, spaces, doors, windows, stair.
 
-Limits (v0): doors and windows are placed elements without wall voids; walls are centreline boxes.
+Doors and windows sit in IfcOpeningElement voids cut into their host walls. Walls are centreline boxes.
 """
 
 import uuid
@@ -8,6 +8,7 @@ import uuid
 import ifcopenshell
 import ifcopenshell.api.aggregate
 import ifcopenshell.api.context
+import ifcopenshell.api.feature
 import ifcopenshell.api.geometry
 import ifcopenshell.api.project
 import ifcopenshell.api.pset
@@ -18,7 +19,7 @@ import ifcopenshell.guid
 import numpy as np
 
 from archmind.design.layout import LayoutOption
-from archmind.design.walls import STOREY_HEIGHT, openings, walls
+from archmind.design.walls import STOREY_HEIGHT, Opening, Wall, openings, walls
 
 NAMESPACE = uuid.UUID("6f1c2b8e-2b7a-4e8a-9a0e-7b1b3c6d5e4f")
 SLAB_DEPTH = 0.15
@@ -41,6 +42,40 @@ def _place(
     m[:3, :3] = [[c, -s, 0], [s, c, 0], [0, 0, 1]]
     m[:3, 3] = [x, y, z]
     ifcopenshell.api.geometry.edit_object_placement(f, product=product, matrix=m)
+
+
+def _host(
+    hosts: list[tuple[Wall, ifcopenshell.entity_instance]], o: Opening
+) -> tuple[Wall, ifcopenshell.entity_instance] | None:
+    """The wall whose centreline contains the opening's centre."""
+    for w, wall in hosts:
+        if o.horizontal and abs(w.y1 - w.y2) < 1e-9 and abs(w.y1 - o.y) < 1e-6:
+            if min(w.x1, w.x2) - 1e-6 <= o.x <= max(w.x1, w.x2) + 1e-6:
+                return w, wall
+        if not o.horizontal and abs(w.x1 - w.x2) < 1e-9 and abs(w.x1 - o.x) < 1e-6:
+            if min(w.y1, w.y2) - 1e-6 <= o.y <= max(w.y1, w.y2) + 1e-6:
+                return w, wall
+    return None
+
+
+def _stable_ids(f: ifcopenshell.file, key: str) -> None:
+    """Relationships and property sets created by the API get random GUIDs, and their creation
+    order is not stable. Derive each GUID from what the record links (deterministic object ids)."""
+    for rel in f.by_type("IfcRelDefinesByProperties"):
+        objs = ",".join(sorted(o.GlobalId for o in rel.RelatedObjects))
+        pset = rel.RelatingPropertyDefinition
+        pset.GlobalId = _gid(f"{key}/pset/{pset.Name}/{objs}")
+        rel.GlobalId = _gid(f"{key}/defines/{pset.Name}/{objs}")
+    for rel in f.by_type("IfcRelationship"):
+        if rel.is_a("IfcRelDefinesByProperties"):
+            continue
+        linked: list[str] = []
+        for value in rel:  # type: ignore[attr-defined]  # entity_instance iterates its attributes
+            items = value if isinstance(value, tuple) else (value,)
+            linked += [
+                v.GlobalId for v in items if isinstance(v, ifcopenshell.entity_instance) and v.is_a("IfcRoot")
+            ]
+        rel.GlobalId = _gid(f"{key}/{rel.is_a()}/{','.join(sorted(linked))}")
 
 
 def build(opt: LayoutOption, project_name: str = "ArchMind project") -> ifcopenshell.file:
@@ -79,6 +114,7 @@ def build(opt: LayoutOption, project_name: str = "ArchMind project") -> ifcopens
         _place(f, slab, fp.x, fp.y, z - SLAB_DEPTH)
         contained.append(slab)
 
+        hosts: list[tuple[Wall, ifcopenshell.entity_instance]] = []
         for w in walls(floor):
             wall = entity(
                 "IfcWall", ("External" if w.external else "Internal") + f" wall {w.id}", f"wall/{w.id}"
@@ -95,16 +131,32 @@ def build(opt: LayoutOption, project_name: str = "ArchMind project") -> ifcopens
             horizontal = abs(w.y2 - w.y1) < 1e-9
             _place(f, wall, w.x1, w.y1, z, 0.0 if horizontal else np.pi / 2)
             contained.append(wall)
+            hosts.append((w, wall))
 
         for o in openings(floor):
             cls = "IfcDoor" if o.kind == "door" else "IfcWindow"
             el = entity(cls, o.id, f"opening/{o.id}")
+            height, sill = (2.1, 0.0) if o.kind == "door" else (1.2, 0.9)
             el.OverallWidth = o.width
-            el.OverallHeight = 2.1 if o.kind == "door" else 1.2
-            _place(
-                f, el, o.x, o.y, z + (0.0 if o.kind == "door" else 0.9), 0.0 if o.horizontal else np.pi / 2
-            )
+            el.OverallHeight = height
+            angle = 0.0 if o.horizontal else np.pi / 2
+            # Start of the opening along its wall (placement origin is the start, not the centre).
+            sx, sy = (o.x - o.width / 2, o.y) if o.horizontal else (o.x, o.y - o.width / 2)
+            _place(f, el, sx, sy, z + sill, angle)
             contained.append(el)
+            host = _host(hosts, o)
+            if host is None:  # opening not on any wall line: keep the element, report no void
+                continue
+            w, wall = host
+            void = entity("IfcOpeningElement", f"Opening {o.id}", f"void/{o.id}")
+            t = w.thickness + 0.02  # slightly thicker than the wall so the cut is clean
+            rep = ifcopenshell.api.geometry.add_wall_representation(
+                f, context=body, length=o.width, height=height, thickness=t, offset=-t / 2
+            )
+            ifcopenshell.api.geometry.assign_representation(f, product=void, representation=rep)
+            _place(f, void, sx, sy, z + sill, angle)
+            ifcopenshell.api.feature.add_feature(f, feature=void, element=wall)
+            ifcopenshell.api.feature.add_filling(f, opening=void, element=el)
 
         if floor.stair is not None:
             st = entity("IfcStair", f"Stair {floor.level}", f"stair/{floor.level}")
@@ -134,10 +186,5 @@ def build(opt: LayoutOption, project_name: str = "ArchMind project") -> ifcopens
             )
             spaces.append(sp)
         ifcopenshell.api.aggregate.assign_object(f, products=spaces, relating_object=storey)
-    # Relationships and property sets created by the API get random GUIDs; derive them from the
-    # (deterministic) step id so the whole file is reproducible.
-    ours = {e.GlobalId for e in f.by_type("IfcRoot") if e.is_a("IfcObjectDefinition")}
-    for e in f.by_type("IfcRoot"):
-        if not e.is_a("IfcObjectDefinition") and e.GlobalId not in ours:
-            e.GlobalId = _gid(f"{key}/auto/{e.id()}")
+    _stable_ids(f, key)
     return f
