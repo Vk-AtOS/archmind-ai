@@ -185,3 +185,25 @@ def test_create_admin_rejects_addresses_login_would_refuse(client: TestClient) -
     os.environ["ARCHMIND_ADMIN_PASSWORD"] = PW
     with pytest.raises(SystemExit, match="login form"):
         create_admin("Org", "owner@archmind.local", "Owner")
+
+
+def test_actual_cost_needs_opt_in_and_reports_estimate_error(client: TestClient) -> None:
+    a, _ = org_admin(client)
+    pr = a.post("/api/v1/projects", json={"name": "Built"}).json()
+    opt = a.post(f"/api/v1/projects/{pr['id']}/briefs", json=BRIEF).json()["options"][0]
+    url = f"/api/v1/options/{opt['id']}/actual-costs"
+    assert a.get("/api/v1/org/settings").json() == {"data_use_opt_in": False}
+    assert a.post(url, json={"total": 1_200_000, "currency": "INR"}).status_code == 409  # off by default
+    assert a.put("/api/v1/org/settings", json={"data_use_opt_in": True}).status_code == 200
+    assert a.post(url, json={"total": 1_200_000, "currency": "USD"}).status_code == 422
+    r = a.post(url, json={"total": 1_200_000, "currency": "INR", "note": "final bill"})
+    assert r.status_code == 201, r.text
+    body = r.json()
+    expected = round((opt["estimate_total"] - 1_200_000) / 1_200_000 * 100, 1)
+    assert body["error_pct"] == expected
+    assert len(a.get(url).json()) == 1
+    viewer = add_user(a, "viewer")
+    assert viewer.post(url, json={"total": 1, "currency": "INR"}).status_code == 403
+    assert viewer.put("/api/v1/org/settings", json={"data_use_opt_in": False}).status_code == 403
+    other, _ = org_admin(client)
+    assert other.get(url).status_code == 404

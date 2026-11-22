@@ -27,6 +27,11 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </Link>
           {me && (
             <div className="flex items-center gap-3 text-sm text-stone-600">
+              {me.role === "admin" && (
+                <Link href="/settings" className="hover:underline">
+                  Settings
+                </Link>
+              )}
               <span data-testid="whoami">
                 {me.name} · {me.role.replace("_", " ")}
               </span>
