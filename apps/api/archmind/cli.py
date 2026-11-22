@@ -5,6 +5,7 @@ import getpass
 import os
 import sys
 
+from pydantic import EmailStr, TypeAdapter, ValidationError
 from sqlalchemy import select
 
 from archmind.db import session_factory
@@ -13,6 +14,12 @@ from archmind.security import audit, hash_password
 
 
 def create_admin(org_name: str, email: str, name: str) -> None:
+    # Same check as the login form: an address it would reject (e.g. a reserved .local domain)
+    # must not be accepted here, or the admin can never sign in.
+    try:
+        email = TypeAdapter(EmailStr).validate_python(email)
+    except ValidationError:
+        sys.exit(f"{email!r} is not an address the login form accepts; use a real domain")
     password = os.environ.get("ARCHMIND_ADMIN_PASSWORD") or getpass.getpass("Admin password: ")
     if len(password) < 12:
         sys.exit("password must be at least 12 characters")

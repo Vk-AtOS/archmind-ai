@@ -178,3 +178,10 @@ def test_account_wide_cap_does_not_lock_user_out_of_known_network(client: TestCl
     for _ in range(5):
         known.post("/api/v1/auth/login", json={"email": email, "password": "nope"})
     assert known.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429
+
+
+def test_create_admin_rejects_addresses_login_would_refuse(client: TestClient) -> None:
+    # Regression: owner@archmind.local was created but could never sign in.
+    os.environ["ARCHMIND_ADMIN_PASSWORD"] = PW
+    with pytest.raises(SystemExit, match="login form"):
+        create_admin("Org", "owner@archmind.local", "Owner")
