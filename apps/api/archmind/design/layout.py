@@ -57,12 +57,13 @@ class LayoutOption(BaseModel):
 
 
 MIN_FOOTPRINT_DEPTH = 7.0  # two bands of ~3 m plus a corridor
+TARGET_DEPTH = 8.0  # preferred depth: bands of ~3.5 m
 NET_RATIO = 0.82  # ponytail: rooms vs gross floor area; tune from partner-rated layouts (ARCH-155)
 
 
 def _footprint(brief: DesignBrief, pack: RulePack, per_floor: list[list[tuple[str, str, float]]]) -> Rect:
-    """Full buildable width, depth sized to the largest floor's room programme, capped by
-    setbacks, coverage and floor-area ratio."""
+    """Footprint sized to the largest floor's room programme: width first (so wide plots do not
+    stretch rooms), then depth, capped by setbacks, coverage and floor-area ratio."""
     bw, bd = brief.buildable_width, brief.buildable_depth
     plot_area = brief.plot_width_m * brief.plot_depth_m
     stair = STAIR_W * STAIR_D if brief.floors > 1 else 0.0
@@ -72,8 +73,9 @@ def _footprint(brief: DesignBrief, pack: RulePack, per_floor: list[list[tuple[st
         pack.value("coverage.max", 1.0) * plot_area,
         pack.value("far.max", 99.0) * plot_area / brief.floors,
     )
-    depth = min(max(need / bw, MIN_FOOTPRINT_DEPTH), max_fp / bw, bd)
-    return Rect(x=brief.setbacks.left, y=brief.setbacks.front, w=round(bw, 2), d=round(depth, 2))
+    width = min(bw, need / TARGET_DEPTH)
+    depth = min(max(need / width, MIN_FOOTPRINT_DEPTH), max_fp / width, bd)
+    return Rect(x=brief.setbacks.left, y=brief.setbacks.front, w=round(width, 2), d=round(depth, 2))
 
 
 def _room_list(brief: DesignBrief) -> list[tuple[str, str, float]]:
