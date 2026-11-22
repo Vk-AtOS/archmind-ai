@@ -36,6 +36,17 @@ test("brief to checked design with estimate and IFC", async ({ page }) => {
   await toggle.getByRole("button", { name: "Whole house" }).click();
   await expect(page.locator("canvas")).toBeVisible();
 
+  // Actual cost (ARCH-154): off by default, admin turns it on, a recorded cost shows its estimate error.
+  const optionUrl = page.url();
+  await expect(page.getByText("Recording actual costs is off")).toBeVisible();
+  await page.getByRole("link", { name: "Settings" }).click();
+  await page.getByTestId("opt-in").check();
+  await expect(page.getByTestId("opt-in")).toBeChecked();
+  await page.goto(optionUrl);
+  await page.getByLabel(/Actual total/).fill("1200000");
+  await page.getByRole("button", { name: "Record" }).click();
+  await expect(page.getByTestId("actual-costs")).toContainText("%");
+
   const download = page.waitForEvent("download");
   await page.getByTestId("download-ifc").click();
   expect((await download).suggestedFilename()).toMatch(/\.ifc$/);

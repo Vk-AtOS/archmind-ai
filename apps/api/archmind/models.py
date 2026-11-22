@@ -21,6 +21,8 @@ class Organization(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=_id)
     name: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    # Opt-in to share actual costs and project data for estimate improvement (ARCH-145). Off by default.
+    data_use_opt_in: Mapped[bool] = mapped_column(default=False, server_default="false")
 
 
 class User(Base):
@@ -108,4 +110,22 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(64))
     target: Mapped[str] = mapped_column(String(200), default="")
     meta: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
+class ActualCost(Base):
+    """Builder-reported actual cost for a chosen option (ARCH-154). Append-only: a correction is a new row."""
+
+    __tablename__ = "actual_costs"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=_id)
+    org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), index=True)
+    option_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("design_options.id"), index=True)
+    total: Mapped[float]
+    currency: Mapped[str] = mapped_column(String(3))
+    estimate_total: Mapped[
+        float
+    ]  # estimate at the time of recording, so later rate changes do not rewrite history
+    rate_table: Mapped[str] = mapped_column(String(100))
+    note: Mapped[str] = mapped_column(String(1000), default="")
+    recorded_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     at: Mapped[datetime] = mapped_column(default=utcnow)
