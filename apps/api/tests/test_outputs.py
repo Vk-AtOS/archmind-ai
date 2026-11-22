@@ -125,3 +125,15 @@ def test_ifc_global_ids_are_deterministic() -> None:
     ids_b = sorted(e.GlobalId for e in build(opt).by_type("IfcRoot"))
     assert ids_a == ids_b
     assert len(set(ids_a)) == len(ids_a)
+
+
+def test_doors_and_windows_cut_voids_in_their_walls() -> None:
+    opt = generate(BRIEFS[0])[0]
+    f = build(opt)
+    fills = f.by_type("IfcDoor") + f.by_type("IfcWindow")
+    assert fills and all(e.FillsVoids for e in fills)
+    for void in f.by_type("IfcOpeningElement"):
+        assert void.VoidsElements and void.VoidsElements[0].RelatingBuildingElement.is_a("IfcWall")
+    settings = ifcopenshell.geom.settings()
+    wall = fills[0].FillsVoids[0].RelatingOpeningElement.VoidsElements[0].RelatingBuildingElement
+    assert ifcopenshell.geom.create_shape(settings, wall)  # wall geometry with the cut still builds
