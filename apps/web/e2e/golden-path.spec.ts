@@ -47,6 +47,12 @@ test("brief to checked design with estimate and IFC", async ({ page }) => {
   await page.getByRole("button", { name: "Record" }).click();
   await expect(page.getByTestId("actual-costs")).toContainText("%");
 
+  // Printable report (ARCH-87): same figures as the option page, with sources and limits.
+  await page.getByTestId("report-link").click();
+  await expect(page.getByTestId("report-total")).toContainText("₹");
+  await expect(page.getByText("not for construction")).toBeVisible();
+  await page.goBack();
+
   const download = page.waitForEvent("download");
   await page.getByTestId("download-ifc").click();
   expect((await download).suggestedFilename()).toMatch(/\.ifc$/);
