@@ -23,6 +23,7 @@ MAX_FAILURES_PER_IP = 5  # per account and client network: stops guessing from o
 MAX_FAILURES_PER_ACCOUNT = 20  # all networks: caps distributed guessing at 80/hour per account,
 # while one attacker alone can no longer lock a victim out with five bad passwords.
 LOCKOUT = timedelta(minutes=15)
+TRUSTED_FOR = timedelta(days=30)
 
 
 def client_key(host: str | None) -> str:
@@ -71,8 +72,22 @@ def locked_out(db: Session, email: str, ip: str) -> bool:
     since = utcnow() - LOCKOUT
     failed = (LoginAttempt.email == email, LoginAttempt.ok.is_(False), LoginAttempt.at > since)
     per_ip = db.scalar(select(func.count()).where(*failed, LoginAttempt.ip == ip)) or 0
+    if per_ip >= MAX_FAILURES_PER_IP:
+        return True
+    # A network this user signed in from recently is trusted: the account-wide cap (which an
+    # attacker could trigger) does not lock the real user out of their usual network.
+    trusted = db.scalar(
+        select(func.count()).where(
+            LoginAttempt.email == email,
+            LoginAttempt.ip == ip,
+            LoginAttempt.ok.is_(True),
+            LoginAttempt.at > utcnow() - TRUSTED_FOR,
+        )
+    )
+    if trusted:
+        return False
     per_account = db.scalar(select(func.count()).where(*failed)) or 0
-    return per_ip >= MAX_FAILURES_PER_IP or per_account >= MAX_FAILURES_PER_ACCOUNT
+    return per_account >= MAX_FAILURES_PER_ACCOUNT
 
 
 def new_session(db: Session, user_id: uuid.UUID, org_id: uuid.UUID) -> str:

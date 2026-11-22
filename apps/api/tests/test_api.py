@@ -159,3 +159,14 @@ def test_ipv6_addresses_in_one_network_share_a_throttle_key() -> None:
     assert client_key("2001:db8::1") == client_key("2001:db8::ffff") == "2001:db8::/64"
     assert client_key("203.0.113.9") == "203.0.113.9"
     assert client_key(None) == "unknown"
+
+
+def test_account_wide_cap_does_not_lock_user_out_of_known_network(client: TestClient) -> None:
+    _, email = org_admin(client)  # org_admin signs in from "testclient": a trusted network now
+    for i in range(20):  # distributed attack: 4 networks x 5 failures
+        c = TestClient(client.app, client=(f"203.0.113.{i // 5}", 1))
+        c.post("/api/v1/auth/login", json={"email": email, "password": "nope"})
+    stranger = TestClient(client.app, client=("198.51.100.99", 1))
+    assert stranger.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 429
+    known = TestClient(client.app)
+    assert known.post("/api/v1/auth/login", json={"email": email, "password": PW}).status_code == 200
