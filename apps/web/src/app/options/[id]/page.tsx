@@ -17,6 +17,7 @@ export default function OptionPage() {
   const [opt, setOpt] = useState<OptionDetail | null>(null);
   const [error, setError] = useState("");
   const [floor, setFloor] = useState(0);
+  const [floor3d, setFloor3d] = useState<number | "all">(0);
 
   useEffect(() => {
     api<OptionDetail>(`/options/${id}`).then(setOpt, (e) => setError(errorText(e)));
@@ -101,8 +102,19 @@ export default function OptionPage() {
           <img src={`/api/v1/options/${opt.id}/plans/${floor}.svg`} alt={`Plan of floor ${floor}`} className="w-full" />
         </section>
         <section className="card">
-          <h2 className="mb-2 font-medium">3D view</h2>
-          <Model3D layout={opt.layout} />
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="font-medium">3D view</h2>
+            <div className="flex gap-1" data-testid="floor3d-toggle">
+              {[...opt.layout.floors.map((f) => f.level as number | "all"), ...(opt.layout.floors.length > 1 ? ["all" as const] : [])].map(
+                (lv) => (
+                  <button key={String(lv)} onClick={() => setFloor3d(lv)} className={floor3d === lv ? "btn" : "btn-secondary"}>
+                    {lv === "all" ? "Whole house" : lv === 0 ? "Ground" : `Floor ${lv}`}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+          <Model3D layout={opt.layout} level={floor3d} />
         </section>
       </div>
 

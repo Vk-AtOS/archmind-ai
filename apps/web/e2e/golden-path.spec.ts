@@ -30,6 +30,11 @@ test("brief to checked design with estimate and IFC", async ({ page }) => {
   await expect(plan).toBeVisible();
   expect(await plan.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   await expect(page.locator("canvas")).toBeVisible();
+  // 3D floor toggle (ARCH-161): ground floor is shown first; whole house is one click away.
+  const toggle = page.getByTestId("floor3d-toggle");
+  await expect(toggle.getByRole("button", { name: "Ground" })).toBeVisible();
+  await toggle.getByRole("button", { name: "Whole house" }).click();
+  await expect(page.locator("canvas")).toBeVisible();
 
   const download = page.waitForEvent("download");
   await page.getByTestId("download-ifc").click();
