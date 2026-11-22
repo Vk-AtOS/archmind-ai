@@ -107,3 +107,15 @@ def test_options_are_genuinely_different(b: DesignBrief) -> None:
         for o in opts
     }
     assert len(layouts) == 3
+
+
+@pytest.mark.parametrize(
+    "b",
+    [b for b in BRIEFS if any(r.type == "dining" for r in b.rooms)],
+    ids=lambda b: f"{b.plot_width_m}x{b.plot_depth_m}",
+)
+def test_kitchen_shares_a_wall_with_dining(b: DesignBrief) -> None:
+    # Owner-visible quality issue: kitchen and dining were often across the corridor.
+    for o in generate(b, n=3):
+        rooms = {r.type: r for f in o.floors for r in f.rooms if f.level == 0}
+        assert rooms["kitchen"].rect.touches(rooms["dining"].rect), o.id
