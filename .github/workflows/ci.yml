@@ -47,7 +47,8 @@ jobs:
       - run: npm run build
 
   e2e:
-    runs-on: ubuntu-latest
+    # Playwright 1.54 has no Chromium build for ubuntu-latest (26.04); pin until we upgrade it.
+    runs-on: ubuntu-24.04
     needs: [api, web]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
