@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Shell from "@/components/Shell";
 import { api, errorText } from "@/lib/api";
 import { type BriefOut, money, type Project } from "@/lib/types";
+import { areaU, fromUnit, lenU, toUnit, useUnit } from "@/lib/units";
 
 const num = (f: FormData, k: string) => Number(f.get(k));
 
@@ -16,6 +17,8 @@ export default function ProjectPage() {
   const [briefs, setBriefs] = useState<BriefOut[] | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const unit = useUnit();
+  const metres = (f: FormData, k: string) => Math.round(fromUnit(num(f, k), unit) * 1000) / 1000;
 
   useEffect(() => {
     api<Project>(`/projects/${id}`).then(setProject, (e) => setError(errorText(e)));
@@ -33,9 +36,9 @@ export default function ProjectPage() {
       ...(f.get("dining") ? [{ type: "dining" }] : []),
     ];
     const brief = {
-      plot_width_m: num(f, "plot_width_m"),
-      plot_depth_m: num(f, "plot_depth_m"),
-      setbacks: { front: num(f, "front"), rear: num(f, "rear"), left: num(f, "left"), right: num(f, "right") },
+      plot_width_m: metres(f, "plot_width_m"),
+      plot_depth_m: metres(f, "plot_depth_m"),
+      setbacks: { front: metres(f, "front"), rear: metres(f, "rear"), left: metres(f, "left"), right: metres(f, "right") },
       floors: num(f, "floors"),
       rooms,
     };
@@ -51,12 +54,16 @@ export default function ProjectPage() {
     }
   }
 
+  // Lengths are typed in the chosen unit and sent to the API in metres. Defaults round UP so that
+  // 3 m shows as 9.85 ft (3.0023 m), not 9.84 ft (2.9992 m), which would fail a 3 m minimum setback.
+  const lengthField = (name: string, label: string, metresValue: number) =>
+    field(name, `${label} (${unit})`, Math.ceil(toUnit(metresValue, unit) * 100 - 1e-9) / 100, unit === "cm" || unit === "mm" ? 1 : 0.01);
   const field = (name: string, label: string, value: number, step = 0.1, min = 0) => (
     <div>
       <label className="label" htmlFor={name}>
         {label}
       </label>
-      <input id={name} name={name} type="number" step={step} min={min} defaultValue={value} required className="input" />
+      <input key={`${name}-${unit}`} id={name} name={name} type="number" step={step} min={min} defaultValue={value} required className="input" />
     </div>
   );
 
@@ -73,8 +80,8 @@ export default function ProjectPage() {
       <form onSubmit={generate} className="card mb-8">
         <h2 className="mb-3 font-medium">New brief</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {field("plot_width_m", "Plot width (m)", 12)}
-          {field("plot_depth_m", "Plot depth (m)", 15)}
+          {lengthField("plot_width_m", "Plot width", 12)}
+          {lengthField("plot_depth_m", "Plot depth", 15)}
           <div>
             <label className="label" htmlFor="floors">
               Floors
@@ -85,10 +92,10 @@ export default function ProjectPage() {
             </select>
           </div>
           <div />
-          {field("front", "Front setback (m)", 3)}
-          {field("rear", "Rear setback (m)", 1.5)}
-          {field("left", "Left setback (m)", 1)}
-          {field("right", "Right setback (m)", 1)}
+          {lengthField("front", "Front setback", 3)}
+          {lengthField("rear", "Rear setback", 1.5)}
+          {lengthField("left", "Left setback", 1)}
+          {lengthField("right", "Right setback", 1)}
           {field("bedrooms", "Bedrooms", 3, 1, 1)}
           {field("bathrooms", "Bathrooms", 2, 1, 1)}
           <label className="flex items-center gap-2 self-end pb-2 text-sm">
@@ -115,7 +122,7 @@ export default function ProjectPage() {
         briefs.map((b) => (
           <section key={b.id} className="mb-6">
             <p className="mb-2 text-xs text-stone-500">
-              Brief {new Date(b.created_at).toLocaleString()} · plot {String(b.data.plot_width_m)} × {String(b.data.plot_depth_m)} m
+              Brief {new Date(b.created_at).toLocaleString()} · plot {lenU(Number(b.data.plot_width_m), unit)} × {lenU(Number(b.data.plot_depth_m), unit)}
             </p>
             <ul className="grid gap-3 sm:grid-cols-3">
               {b.options.map((o) => (
@@ -123,7 +130,7 @@ export default function ProjectPage() {
                   <Link href={`/options/${o.id}`} className="card block hover:border-stone-400" data-testid="option-card">
                     <div className="font-medium">{o.label.replace("option-", "Option ")}</div>
                     <div className="mt-1 text-sm">
-                      Score {o.score.toFixed(2)} · {o.built_up_m2.toFixed(1)} m² built-up
+                      Score {o.score.toFixed(2)} · {areaU(o.built_up_m2, unit)} built-up
                     </div>
                     <div className="text-sm">{money(o.estimate_total, o.currency)} indicative</div>
                     <div className={`mt-2 text-xs ${o.failed_checks ? "text-red-700" : "text-green-700"}`}>

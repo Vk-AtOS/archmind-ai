@@ -5,6 +5,7 @@ from xml.sax.saxutils import escape
 from pydantic import BaseModel
 
 from archmind.design.layout import LayoutOption
+from archmind.design.units import Unit, area, bare_length, length
 from archmind.design.walls import openings, walls
 
 SCALE = 40  # px per metre
@@ -35,7 +36,7 @@ def schedule(opt: LayoutOption) -> list[ScheduleRow]:
     ]
 
 
-def plan_svg(opt: LayoutOption, level: int, project: str = "ArchMind project") -> str:
+def plan_svg(opt: LayoutOption, level: int, project: str = "ArchMind project", unit: Unit = "m") -> str:
     floor = opt.floors[level]
     pw, pd = opt.plot.w * SCALE, opt.plot.d * SCALE
     W, H = pw + 2 * MARGIN, pd + 2 * MARGIN + 70
@@ -58,7 +59,7 @@ def plan_svg(opt: LayoutOption, level: int, project: str = "ArchMind project") -
         parts.append(
             f'<rect x="{X(rc.x)}" y="{Y(rc.y + rc.d)}" width="{rc.w * SCALE:.1f}" height="{rc.d * SCALE:.1f}" fill="#f4f1ea"/>'
         )
-        detail = f"{rc.area:.1f} m² ({rc.w:.2f} × {rc.d:.2f})"
+        detail = f"{area(rc.area, unit)} ({bare_length(rc.w, unit)} × {length(rc.d, unit)})"
         room_px = rc.w * SCALE - 8
         # ponytail: ~0.6 em per character estimate; exact text metrics would need a font engine.
         name_fs = min(12.0, room_px / (0.6 * len(r.name)))
@@ -93,10 +94,10 @@ def plan_svg(opt: LayoutOption, level: int, project: str = "ArchMind project") -
         )
     fp = floor.footprint
     parts.append(
-        f'<text x="{X(fp.x + fp.w / 2)}" y="{Y(fp.y + fp.d) - 8}" font-size="11" text-anchor="middle">{fp.w:.2f} m</text>'
+        f'<text x="{X(fp.x + fp.w / 2)}" y="{Y(fp.y + fp.d) - 8}" font-size="11" text-anchor="middle">{length(fp.w, unit)}</text>'
     )
     parts.append(
-        f'<text x="{X(fp.x + fp.w) + 8}" y="{Y(fp.y + fp.d / 2)}" font-size="11">{fp.d:.2f} m</text>'
+        f'<text x="{X(fp.x + fp.w) + 8}" y="{Y(fp.y + fp.d / 2)}" font-size="11">{length(fp.d, unit)}</text>'
     )
     ty = H - 50
     parts.append(f'<rect x="10" y="{ty}" width="{W - 20:.0f}" height="40" fill="none" stroke="#222"/>')

@@ -5,6 +5,7 @@ each band left to right with widths proportional to their target areas. Candidat
 rule (check engine) are discarded; the rest are scored on soft goals.
 """
 
+import math
 import random
 from typing import Literal
 
@@ -14,7 +15,7 @@ from archmind.design.brief import DEFAULT_AREA, DesignBrief
 from archmind.design.geometry import Rect
 from archmind.design.rules import RulePack, load_pack
 
-GENERATOR_VERSION = "0.3.0"
+GENERATOR_VERSION = "0.3.1"
 STAIR_W = 1.2
 STAIR_D = 3.0
 Side = Literal["front", "rear"]
@@ -69,7 +70,13 @@ def _footprint(
 ) -> Rect:
     """Footprint sized to the largest floor's room programme: width first (so wide plots do not
     stretch rooms), then depth, capped by setbacks, coverage and floor-area ratio."""
-    bw, bd = brief.buildable_width, brief.buildable_depth
+    # Room coordinates are on a 1 cm grid, so the footprint origin snaps up to it (a 3.003 m setback,
+    # e.g. 9.85 ft, starts the house at 3.01 m) and the usable size shrinks by the same amount.
+    # Without this, rooms sat up to 5 mm outside the footprint and every candidate was rejected.
+    x0 = math.ceil(brief.setbacks.left * 100 - 1e-9) / 100
+    y0 = math.ceil(brief.setbacks.front * 100 - 1e-9) / 100
+    bw = math.floor((brief.buildable_width - (x0 - brief.setbacks.left)) * 100 + 1e-9) / 100
+    bd = math.floor((brief.buildable_depth - (y0 - brief.setbacks.front)) * 100 + 1e-9) / 100
     plot_area = brief.plot_width_m * brief.plot_depth_m
     stair = STAIR_W * STAIR_D if brief.floors > 1 else 0.0
     need = max(sum(r[2] for r in rooms) for rooms in per_floor) / NET_RATIO + stair
@@ -80,7 +87,7 @@ def _footprint(
     )
     width = min(bw, need / target_depth)
     depth = min(max(need / width, MIN_FOOTPRINT_DEPTH), max_fp / width, bd)
-    return Rect(x=brief.setbacks.left, y=brief.setbacks.front, w=round(width, 2), d=round(depth, 2))
+    return Rect(x=x0, y=y0, w=min(round(width, 2), bw), d=min(round(depth, 2), bd))
 
 
 def _room_list(brief: DesignBrief) -> list[tuple[str, str, float]]:

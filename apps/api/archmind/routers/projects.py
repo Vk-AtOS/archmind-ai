@@ -16,6 +16,7 @@ from archmind.design.ifc import build
 from archmind.design.layout import LayoutOption, generate
 from archmind.design.quantities import Quantities, compute
 from archmind.design.rules import load_pack
+from archmind.design.units import Unit
 from archmind.models import Brief, DesignOption, Project
 from archmind.security import Principal, audit, current
 
@@ -213,12 +214,16 @@ def get_option(
 
 @router.get("/options/{option_id}/plans/{level}.svg")
 def option_plan(
-    option_id: uuid.UUID, level: int, p: Principal = Depends(current), db: Session = Depends(get_db)
+    option_id: uuid.UUID,
+    level: int,
+    units: Unit = "m",
+    p: Principal = Depends(current),
+    db: Session = Depends(get_db),
 ) -> Response:
     _, layout, _ = _option(db, p, option_id)
     if not 0 <= level < len(layout.floors):
         raise HTTPException(404, "no such floor")
-    return Response(plan_svg(layout, level), media_type="image/svg+xml")
+    return Response(plan_svg(layout, level, unit=units), media_type="image/svg+xml")
 
 
 @router.get("/options/{option_id}/model.ifc")

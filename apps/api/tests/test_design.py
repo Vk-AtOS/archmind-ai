@@ -119,3 +119,26 @@ def test_kitchen_shares_a_wall_with_dining(b: DesignBrief) -> None:
     for o in generate(b, n=3):
         rooms = {r.type: r for f in o.floors for r in f.rooms if f.level == 0}
         assert rooms["kitchen"].rect.touches(rooms["dining"].rect), o.id
+
+
+@pytest.mark.parametrize(
+    "setbacks",
+    [
+        {"front": 3.0023, "rear": 1.5037, "left": 1.0028, "right": 1.0028},  # 9.85 / 4.93 / 3.29 ft
+        {"front": 3.048, "rear": 1.524, "left": 1.0668, "right": 1.0668},  # 10 / 5 / 3.5 ft
+    ],
+)
+def test_off_grid_setbacks_from_feet_still_yield_options(setbacks: dict[str, float]) -> None:
+    """ARCH-162: briefs typed in feet arrive as metres off the 1 cm grid; they must still lay out."""
+    rooms = [{"type": "living"}, {"type": "kitchen"}, {"type": "bedroom", "count": 3}]
+    rooms += [{"type": "bathroom", "count": 2}, {"type": "dining"}]
+    b = DesignBrief.model_validate(
+        {"plot_width_m": 12.192, "plot_depth_m": 15.24, "setbacks": setbacks, "floors": 2, "rooms": rooms}
+    )
+    opts = generate(b, n=3)
+    assert len(opts) == 3
+    for o in opts:
+        fp = o.floors[0].footprint
+        assert fp.x >= setbacks["left"] and fp.y >= setbacks["front"]
+        assert fp.x + fp.w <= b.plot_width_m - setbacks["right"] + 1e-9
+        assert all(i.result != "fail" for i in run_checks(o, b, load_pack(b.rule_pack)))
