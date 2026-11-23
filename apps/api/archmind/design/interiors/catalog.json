@@ -1,0 +1,1473 @@
+{
+ "version": "0.1.0",
+ "status": "sample",
+ "currency": "INR",
+ "source": "illustrative placeholder prices, not supplier quotes (ARCH-153)",
+ "items": [
+  {
+   "id": "bed_queen_modern",
+   "name": "Queen bed, low platform",
+   "category": "furniture",
+   "kind": "bed",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.6,
+   "d": 2.1,
+   "h": 0.9,
+   "shape": "bed",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#8d6e63",
+   "price": 32000,
+   "styles": [
+    "modern",
+    "minimal"
+   ],
+   "clear": 0.6
+  },
+  {
+   "id": "bed_king_upholstered",
+   "name": "King bed, upholstered headboard",
+   "category": "furniture",
+   "kind": "bed",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.95,
+   "d": 2.15,
+   "h": 1.1,
+   "shape": "bed",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#9e9e9e",
+   "price": 55000,
+   "styles": [
+    "scandinavian",
+    "industrial",
+    "modern"
+   ],
+   "clear": 0.6
+  },
+  {
+   "id": "bed_queen_teak",
+   "name": "Queen bed, carved teak",
+   "category": "furniture",
+   "kind": "bed",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.7,
+   "d": 2.15,
+   "h": 1.15,
+   "shape": "bed",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#6d4c41",
+   "price": 48000,
+   "styles": [
+    "traditional"
+   ],
+   "clear": 0.6
+  },
+  {
+   "id": "bed_single",
+   "name": "Single bed",
+   "category": "furniture",
+   "kind": "bed",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.0,
+   "d": 2.0,
+   "h": 0.8,
+   "shape": "bed",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#a1887f",
+   "price": 15000,
+   "styles": [],
+   "clear": 0.6
+  },
+  {
+   "id": "wardrobe_3door",
+   "name": "Wardrobe, 3-door sliding",
+   "category": "furniture",
+   "kind": "wardrobe",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.8,
+   "d": 0.65,
+   "h": 2.2,
+   "shape": "wardrobe",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#d7ccc8",
+   "price": 42000,
+   "styles": [
+    "modern",
+    "minimal"
+   ],
+   "clear": 0.75
+  },
+  {
+   "id": "wardrobe_2door",
+   "name": "Wardrobe, 2-door oak",
+   "category": "furniture",
+   "kind": "wardrobe",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.2,
+   "d": 0.6,
+   "h": 2.1,
+   "shape": "wardrobe",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#c8a27a",
+   "price": 26000,
+   "styles": [
+    "scandinavian"
+   ],
+   "clear": 0.75
+  },
+  {
+   "id": "wardrobe_teak",
+   "name": "Wardrobe, carved teak",
+   "category": "furniture",
+   "kind": "wardrobe",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.5,
+   "d": 0.6,
+   "h": 2.1,
+   "shape": "wardrobe",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#5d4037",
+   "price": 52000,
+   "styles": [
+    "traditional"
+   ],
+   "clear": 0.75
+  },
+  {
+   "id": "wardrobe_metal",
+   "name": "Wardrobe, metal and wood",
+   "category": "furniture",
+   "kind": "wardrobe",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 1.5,
+   "d": 0.6,
+   "h": 2.1,
+   "shape": "wardrobe",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#546e7a",
+   "price": 34000,
+   "styles": [
+    "industrial"
+   ],
+   "clear": 0.75
+  },
+  {
+   "id": "side_table",
+   "name": "Bedside table",
+   "category": "furniture",
+   "kind": "side_table",
+   "rooms": [
+    "bedroom"
+   ],
+   "w": 0.45,
+   "d": 0.4,
+   "h": 0.55,
+   "shape": "table",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#a1887f",
+   "price": 6500,
+   "styles": [],
+   "surface": true
+  },
+  {
+   "id": "desk",
+   "name": "Study desk",
+   "category": "furniture",
+   "kind": "desk",
+   "rooms": [
+    "bedroom",
+    "living"
+   ],
+   "w": 1.2,
+   "d": 0.6,
+   "h": 0.75,
+   "shape": "table",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#bcaaa4",
+   "price": 14000,
+   "styles": [],
+   "surface": true,
+   "clear": 0.7
+  },
+  {
+   "id": "bookshelf",
+   "name": "Bookshelf",
+   "category": "furniture",
+   "kind": "bookshelf",
+   "rooms": [
+    "bedroom",
+    "living"
+   ],
+   "w": 0.9,
+   "d": 0.35,
+   "h": 1.8,
+   "shape": "bookshelf",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#8d6e63",
+   "price": 12000,
+   "styles": []
+  },
+  {
+   "id": "sofa_3_modern",
+   "name": "3-seater sofa, grey",
+   "category": "furniture",
+   "kind": "sofa",
+   "rooms": [
+    "living"
+   ],
+   "w": 2.1,
+   "d": 0.9,
+   "h": 0.85,
+   "shape": "sofa",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#9e9e9e",
+   "price": 45000,
+   "styles": [
+    "modern",
+    "minimal"
+   ],
+   "clear": 0.45
+  },
+  {
+   "id": "sofa_scandi",
+   "name": "Fabric sofa, oak legs",
+   "category": "furniture",
+   "kind": "sofa",
+   "rooms": [
+    "living"
+   ],
+   "w": 2.0,
+   "d": 0.85,
+   "h": 0.8,
+   "shape": "sofa",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#cfc6b8",
+   "price": 42000,
+   "styles": [
+    "scandinavian"
+   ],
+   "clear": 0.45
+  },
+  {
+   "id": "sofa_wooden",
+   "name": "Wooden sofa with cushions",
+   "category": "furniture",
+   "kind": "sofa",
+   "rooms": [
+    "living"
+   ],
+   "w": 1.9,
+   "d": 0.8,
+   "h": 0.9,
+   "shape": "sofa",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#6d4c41",
+   "price": 38000,
+   "styles": [
+    "traditional"
+   ],
+   "clear": 0.45
+  },
+  {
+   "id": "sofa_leather",
+   "name": "Leather sofa, cognac",
+   "category": "furniture",
+   "kind": "sofa",
+   "rooms": [
+    "living"
+   ],
+   "w": 2.2,
+   "d": 0.95,
+   "h": 0.85,
+   "shape": "sofa",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#8a4b2a",
+   "price": 78000,
+   "styles": [
+    "industrial"
+   ],
+   "clear": 0.45
+  },
+  {
+   "id": "sofa_l",
+   "name": "L-shaped sectional",
+   "category": "furniture",
+   "kind": "sofa",
+   "rooms": [
+    "living"
+   ],
+   "w": 2.6,
+   "d": 1.7,
+   "h": 0.85,
+   "shape": "sofa_l",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#78909c",
+   "price": 95000,
+   "styles": [],
+   "clear": 0.45
+  },
+  {
+   "id": "armchair",
+   "name": "Armchair",
+   "category": "furniture",
+   "kind": "armchair",
+   "rooms": [
+    "living",
+    "bedroom"
+   ],
+   "w": 0.8,
+   "d": 0.8,
+   "h": 0.85,
+   "shape": "armchair",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#b0907a",
+   "price": 18000,
+   "styles": []
+  },
+  {
+   "id": "armchair_cane",
+   "name": "Cane armchair",
+   "category": "furniture",
+   "kind": "armchair",
+   "rooms": [
+    "living",
+    "bedroom"
+   ],
+   "w": 0.75,
+   "d": 0.75,
+   "h": 0.85,
+   "shape": "armchair",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#c9a66b",
+   "price": 14000,
+   "styles": [
+    "traditional",
+    "scandinavian"
+   ]
+  },
+  {
+   "id": "coffee_table_wood",
+   "name": "Coffee table, wood",
+   "category": "furniture",
+   "kind": "coffee_table",
+   "rooms": [
+    "living"
+   ],
+   "w": 1.1,
+   "d": 0.6,
+   "h": 0.42,
+   "shape": "table",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#8d6e63",
+   "price": 12000,
+   "styles": [
+    "traditional",
+    "scandinavian",
+    "industrial"
+   ],
+   "surface": true
+  },
+  {
+   "id": "coffee_table_glass",
+   "name": "Coffee table, glass top",
+   "category": "furniture",
+   "kind": "coffee_table",
+   "rooms": [
+    "living"
+   ],
+   "w": 1.2,
+   "d": 0.6,
+   "h": 0.4,
+   "shape": "glass_table",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#b3e5fc",
+   "price": 16000,
+   "styles": [
+    "modern",
+    "minimal"
+   ],
+   "surface": true
+  },
+  {
+   "id": "tv_unit",
+   "name": "TV unit with TV",
+   "category": "furniture",
+   "kind": "tv_unit",
+   "rooms": [
+    "living"
+   ],
+   "w": 1.8,
+   "d": 0.4,
+   "h": 0.5,
+   "shape": "tv_unit",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#5d4037",
+   "price": 22000,
+   "styles": [],
+   "surface": true
+  },
+  {
+   "id": "tv_unit_low",
+   "name": "Low TV console with TV",
+   "category": "furniture",
+   "kind": "tv_unit",
+   "rooms": [
+    "living"
+   ],
+   "w": 2.0,
+   "d": 0.35,
+   "h": 0.4,
+   "shape": "tv_unit",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#eeeeee",
+   "price": 20000,
+   "styles": [
+    "minimal",
+    "modern"
+   ],
+   "surface": true
+  },
+  {
+   "id": "dining_set_6",
+   "name": "Dining set, 6 seats",
+   "category": "furniture",
+   "kind": "dining_set",
+   "rooms": [
+    "dining",
+    "living",
+    "kitchen"
+   ],
+   "w": 2.5,
+   "d": 1.7,
+   "h": 0.75,
+   "shape": "dining_set",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#8d6e63",
+   "price": 58000,
+   "styles": [],
+   "seats": 6
+  },
+  {
+   "id": "dining_set_4",
+   "name": "Dining set, 4 seats",
+   "category": "furniture",
+   "kind": "dining_set",
+   "rooms": [
+    "dining",
+    "living",
+    "kitchen"
+   ],
+   "w": 1.9,
+   "d": 1.6,
+   "h": 0.75,
+   "shape": "dining_set",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#a1887f",
+   "price": 36000,
+   "styles": [],
+   "seats": 4
+  },
+  {
+   "id": "dining_set_teak",
+   "name": "Dining set, teak, 6 seats",
+   "category": "furniture",
+   "kind": "dining_set",
+   "rooms": [
+    "dining",
+    "living"
+   ],
+   "w": 2.5,
+   "d": 1.7,
+   "h": 0.78,
+   "shape": "dining_set",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#5d4037",
+   "price": 72000,
+   "styles": [
+    "traditional"
+   ],
+   "seats": 6
+  },
+  {
+   "id": "sideboard",
+   "name": "Sideboard",
+   "category": "furniture",
+   "kind": "sideboard",
+   "rooms": [
+    "dining",
+    "living"
+   ],
+   "w": 1.5,
+   "d": 0.45,
+   "h": 0.85,
+   "shape": "sideboard",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#795548",
+   "price": 24000,
+   "styles": [],
+   "surface": true
+  },
+  {
+   "id": "pooja_unit",
+   "name": "Pooja unit (prayer cabinet)",
+   "category": "furniture",
+   "kind": "pooja_unit",
+   "rooms": [
+    "living",
+    "dining",
+    "kitchen",
+    "bedroom"
+   ],
+   "w": 0.9,
+   "d": 0.5,
+   "h": 1.6,
+   "shape": "pooja_unit",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#a0522d",
+   "price": 28000,
+   "styles": [
+    "traditional"
+   ]
+  },
+  {
+   "id": "counter_2400",
+   "name": "Kitchen counter 2.4 m, hob and sink",
+   "category": "fixture",
+   "kind": "counter",
+   "rooms": [
+    "kitchen"
+   ],
+   "w": 2.4,
+   "d": 0.6,
+   "h": 0.9,
+   "shape": "counter",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#eceff1",
+   "price": 95000,
+   "styles": [],
+   "clear": 0.9,
+   "surface": true
+  },
+  {
+   "id": "counter_1800",
+   "name": "Kitchen counter 1.8 m, hob and sink",
+   "category": "fixture",
+   "kind": "counter",
+   "rooms": [
+    "kitchen"
+   ],
+   "w": 1.8,
+   "d": 0.6,
+   "h": 0.9,
+   "shape": "counter",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#eceff1",
+   "price": 72000,
+   "styles": [],
+   "clear": 0.9,
+   "surface": true
+  },
+  {
+   "id": "fridge",
+   "name": "Refrigerator",
+   "category": "fixture",
+   "kind": "fridge",
+   "rooms": [
+    "kitchen"
+   ],
+   "w": 0.7,
+   "d": 0.7,
+   "h": 1.8,
+   "shape": "fridge",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#cfd8dc",
+   "price": 38000,
+   "styles": [],
+   "clear": 0.8
+  },
+  {
+   "id": "wc",
+   "name": "Wall-hung WC",
+   "category": "fixture",
+   "kind": "wc",
+   "rooms": [
+    "bathroom"
+   ],
+   "w": 0.4,
+   "d": 0.6,
+   "h": 0.8,
+   "shape": "wc",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#fafafa",
+   "price": 16000,
+   "styles": [],
+   "clear": 0.6
+  },
+  {
+   "id": "basin",
+   "name": "Wash basin with vanity",
+   "category": "fixture",
+   "kind": "basin",
+   "rooms": [
+    "bathroom"
+   ],
+   "w": 0.6,
+   "d": 0.45,
+   "h": 0.85,
+   "shape": "basin",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#fafafa",
+   "price": 14000,
+   "styles": [],
+   "clear": 0.6
+  },
+  {
+   "id": "shower",
+   "name": "Shower enclosure",
+   "category": "fixture",
+   "kind": "shower",
+   "rooms": [
+    "bathroom"
+   ],
+   "w": 0.9,
+   "d": 0.9,
+   "h": 2.0,
+   "shape": "shower",
+   "layer": "floor",
+   "place": "wall",
+   "colour": "#b3e5fc",
+   "price": 28000,
+   "styles": []
+  },
+  {
+   "id": "buddha_floor",
+   "name": "Buddha statue, seated, 90 cm",
+   "category": "decor",
+   "kind": "statue",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.55,
+   "d": 0.5,
+   "h": 0.9,
+   "shape": "buddha",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#8c6d46",
+   "price": 24000,
+   "styles": [
+    "traditional",
+    "minimal",
+    "modern"
+   ]
+  },
+  {
+   "id": "buddha_bust",
+   "name": "Buddha head, tabletop",
+   "category": "decor",
+   "kind": "statue_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.22,
+   "d": 0.22,
+   "h": 0.35,
+   "shape": "buddha_head",
+   "layer": "top",
+   "place": "top",
+   "colour": "#9e9e9e",
+   "price": 4500,
+   "styles": [
+    "minimal",
+    "modern"
+   ]
+  },
+  {
+   "id": "ganesha_idol",
+   "name": "Ganesha idol, brass, tabletop",
+   "category": "decor",
+   "kind": "statue_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.25,
+   "d": 0.2,
+   "h": 0.35,
+   "shape": "idol",
+   "layer": "top",
+   "place": "top",
+   "colour": "#c9a227",
+   "price": 6500,
+   "styles": [
+    "traditional"
+   ]
+  },
+  {
+   "id": "urli",
+   "name": "Brass urli with floating flowers",
+   "category": "decor",
+   "kind": "urli",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.6,
+   "d": 0.6,
+   "h": 0.15,
+   "shape": "urli",
+   "layer": "floor",
+   "place": "free",
+   "colour": "#c9a227",
+   "price": 7500,
+   "styles": [
+    "traditional"
+   ]
+  },
+  {
+   "id": "vase_tall",
+   "name": "Floor vase with dried stems",
+   "category": "decor",
+   "kind": "vase",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.3,
+   "d": 0.3,
+   "h": 1.0,
+   "shape": "vase_tall",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#d7ccc8",
+   "price": 5500,
+   "styles": [
+    "scandinavian",
+    "minimal"
+   ]
+  },
+  {
+   "id": "vase_table",
+   "name": "Ceramic vase, tabletop",
+   "category": "decor",
+   "kind": "vase_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.15,
+   "d": 0.15,
+   "h": 0.3,
+   "shape": "vase",
+   "layer": "top",
+   "place": "top",
+   "colour": "#5c6bc0",
+   "price": 1800,
+   "styles": []
+  },
+  {
+   "id": "table_lamp",
+   "name": "Table lamp",
+   "category": "decor",
+   "kind": "lamp_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.3,
+   "d": 0.3,
+   "h": 0.5,
+   "shape": "lamp",
+   "layer": "top",
+   "place": "top",
+   "colour": "#f5deb3",
+   "price": 3500,
+   "styles": []
+  },
+  {
+   "id": "floor_lamp",
+   "name": "Floor lamp, arc",
+   "category": "decor",
+   "kind": "lamp",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.4,
+   "d": 0.4,
+   "h": 1.7,
+   "shape": "lamp",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#212121",
+   "price": 9500,
+   "styles": [
+    "modern",
+    "industrial",
+    "scandinavian"
+   ]
+  },
+  {
+   "id": "wall_art_abstract",
+   "name": "Abstract canvas, 120 cm",
+   "category": "decor",
+   "kind": "wall_art",
+   "rooms": [
+    "any"
+   ],
+   "w": 1.2,
+   "d": 0.04,
+   "h": 0.8,
+   "shape": "wall_art",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#e07a5f",
+   "price": 8500,
+   "styles": [
+    "modern",
+    "minimal",
+    "scandinavian",
+    "industrial"
+   ],
+   "elev": 1.3
+  },
+  {
+   "id": "wall_art_madhubani",
+   "name": "Madhubani painting",
+   "category": "decor",
+   "kind": "wall_art",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.9,
+   "d": 0.04,
+   "h": 0.6,
+   "shape": "wall_art_folk",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#c62828",
+   "price": 12000,
+   "styles": [
+    "traditional"
+   ],
+   "elev": 1.35
+  },
+  {
+   "id": "mirror_round",
+   "name": "Round mirror, brass frame",
+   "category": "decor",
+   "kind": "mirror",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.8,
+   "d": 0.04,
+   "h": 0.8,
+   "shape": "mirror",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#c9a227",
+   "price": 7000,
+   "styles": [],
+   "elev": 1.2
+  },
+  {
+   "id": "wall_clock",
+   "name": "Wall clock",
+   "category": "decor",
+   "kind": "clock",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.45,
+   "d": 0.05,
+   "h": 0.45,
+   "shape": "clock",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#37474f",
+   "price": 2500,
+   "styles": [],
+   "elev": 1.9
+  },
+  {
+   "id": "rug_large",
+   "name": "Rug, 240 x 170",
+   "category": "decor",
+   "kind": "rug",
+   "rooms": [
+    "living",
+    "bedroom",
+    "dining"
+   ],
+   "w": 2.4,
+   "d": 1.7,
+   "h": 0.01,
+   "shape": "rug",
+   "layer": "rug",
+   "place": "free",
+   "colour": "#b0a48f",
+   "price": 14000,
+   "styles": [
+    "modern",
+    "minimal",
+    "scandinavian",
+    "industrial"
+   ]
+  },
+  {
+   "id": "rug_dhurrie",
+   "name": "Dhurrie rug, handwoven",
+   "category": "decor",
+   "kind": "rug",
+   "rooms": [
+    "living",
+    "bedroom",
+    "dining"
+   ],
+   "w": 2.0,
+   "d": 1.4,
+   "h": 0.01,
+   "shape": "rug_pattern",
+   "layer": "rug",
+   "place": "free",
+   "colour": "#b5543a",
+   "price": 9000,
+   "styles": [
+    "traditional"
+   ]
+  },
+  {
+   "id": "rug_runner",
+   "name": "Runner rug",
+   "category": "decor",
+   "kind": "rug_runner",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.8,
+   "d": 2.0,
+   "h": 0.01,
+   "shape": "rug",
+   "layer": "rug",
+   "place": "free",
+   "colour": "#8d9db6",
+   "price": 4500,
+   "styles": []
+  },
+  {
+   "id": "plant_monstera",
+   "name": "Monstera in planter",
+   "category": "plant",
+   "kind": "plant",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.6,
+   "d": 0.6,
+   "h": 1.2,
+   "shape": "plant_broad",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#2e7d32",
+   "price": 3500,
+   "styles": [
+    "modern",
+    "scandinavian"
+   ]
+  },
+  {
+   "id": "plant_areca",
+   "name": "Areca palm",
+   "category": "plant",
+   "kind": "plant",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.7,
+   "d": 0.7,
+   "h": 1.8,
+   "shape": "plant_palm",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#388e3c",
+   "price": 2800,
+   "styles": [
+    "traditional",
+    "modern"
+   ]
+  },
+  {
+   "id": "plant_fiddle",
+   "name": "Fiddle-leaf fig",
+   "category": "plant",
+   "kind": "plant",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.5,
+   "d": 0.5,
+   "h": 1.6,
+   "shape": "plant_broad",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#33691e",
+   "price": 4200,
+   "styles": [
+    "scandinavian",
+    "minimal",
+    "industrial"
+   ]
+  },
+  {
+   "id": "plant_snake",
+   "name": "Snake plant",
+   "category": "plant",
+   "kind": "plant_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.35,
+   "d": 0.35,
+   "h": 0.9,
+   "shape": "plant_snake",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#558b2f",
+   "price": 1500,
+   "styles": [
+    "minimal",
+    "industrial"
+   ]
+  },
+  {
+   "id": "plant_tulsi",
+   "name": "Tulsi in brass pot",
+   "category": "plant",
+   "kind": "plant_small",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.35,
+   "d": 0.35,
+   "h": 0.6,
+   "shape": "plant_bush",
+   "layer": "floor",
+   "place": "corner",
+   "colour": "#43a047",
+   "price": 1200,
+   "styles": [
+    "traditional"
+   ]
+  },
+  {
+   "id": "plant_succulent",
+   "name": "Succulent bowl, tabletop",
+   "category": "plant",
+   "kind": "plant_top",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.18,
+   "d": 0.18,
+   "h": 0.15,
+   "shape": "plant_bush",
+   "layer": "top",
+   "place": "top",
+   "colour": "#7cb342",
+   "price": 900,
+   "styles": []
+  },
+  {
+   "id": "plant_pothos",
+   "name": "Hanging pothos",
+   "category": "plant",
+   "kind": "plant_hanging",
+   "rooms": [
+    "any"
+   ],
+   "w": 0.35,
+   "d": 0.3,
+   "h": 0.6,
+   "shape": "plant_hanging",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#2e7d32",
+   "price": 1600,
+   "styles": [],
+   "elev": 1.5
+  },
+  {
+   "id": "green_wall",
+   "name": "Vertical garden panel",
+   "category": "plant",
+   "kind": "green_wall",
+   "rooms": [
+    "any"
+   ],
+   "w": 1.5,
+   "d": 0.15,
+   "h": 1.5,
+   "shape": "green_wall",
+   "layer": "wall",
+   "place": "wall",
+   "colour": "#2e7d32",
+   "price": 22000,
+   "styles": [
+    "modern",
+    "industrial"
+   ],
+   "elev": 0.6
+  }
+ ],
+ "wall_finishes": [
+  {
+   "id": "paint_warm_white",
+   "name": "Paint, warm white",
+   "pattern": "paint",
+   "colour": "#f4efe6",
+   "rate_m2": 180
+  },
+  {
+   "id": "paint_sage",
+   "name": "Paint, sage green",
+   "pattern": "paint",
+   "colour": "#b7c4a6",
+   "rate_m2": 180
+  },
+  {
+   "id": "paint_terracotta",
+   "name": "Paint, terracotta",
+   "pattern": "paint",
+   "colour": "#c8775a",
+   "rate_m2": 180
+  },
+  {
+   "id": "paint_navy",
+   "name": "Paint, deep navy",
+   "pattern": "paint",
+   "colour": "#2f3e5c",
+   "rate_m2": 180
+  },
+  {
+   "id": "lime_plaster",
+   "name": "Lime plaster, textured",
+   "pattern": "plaster",
+   "colour": "#e8dcc8",
+   "rate_m2": 380
+  },
+  {
+   "id": "exposed_brick",
+   "name": "Exposed brick",
+   "pattern": "brick",
+   "colour": "#a0522d",
+   "rate_m2": 650
+  },
+  {
+   "id": "wood_panel",
+   "name": "Wood panelling",
+   "pattern": "wood",
+   "colour": "#8b5a2b",
+   "rate_m2": 1400
+  },
+  {
+   "id": "stone_cladding",
+   "name": "Stone cladding",
+   "pattern": "stone",
+   "colour": "#9e9a91",
+   "rate_m2": 1600
+  },
+  {
+   "id": "wallpaper_geometric",
+   "name": "Wallpaper, geometric",
+   "pattern": "geometric",
+   "colour": "#d8c3a5",
+   "rate_m2": 520
+  },
+  {
+   "id": "wallpaper_floral",
+   "name": "Wallpaper, floral",
+   "pattern": "floral",
+   "colour": "#e6d5c3",
+   "rate_m2": 520
+  },
+  {
+   "id": "concrete_finish",
+   "name": "Concrete finish",
+   "pattern": "concrete",
+   "colour": "#a7a7a7",
+   "rate_m2": 450
+  },
+  {
+   "id": "wall_tile",
+   "name": "Ceramic wall tile",
+   "pattern": "tile",
+   "colour": "#e0f2f1",
+   "rate_m2": 900
+  }
+ ],
+ "floor_finishes": [
+  {
+   "id": "vitrified_600",
+   "name": "Vitrified tile 600 x 600",
+   "pattern": "tile",
+   "colour": "#e7e2da",
+   "rate_m2": 1100
+  },
+  {
+   "id": "marble_white",
+   "name": "White marble",
+   "pattern": "marble",
+   "colour": "#f1efe9",
+   "rate_m2": 2600
+  },
+  {
+   "id": "wood_laminate",
+   "name": "Wood laminate",
+   "pattern": "wood",
+   "colour": "#a67b5b",
+   "rate_m2": 1500
+  },
+  {
+   "id": "herringbone_oak",
+   "name": "Herringbone oak",
+   "pattern": "herringbone",
+   "colour": "#b08a62",
+   "rate_m2": 2900
+  },
+  {
+   "id": "terracotta",
+   "name": "Terracotta tile",
+   "pattern": "tile_terracotta",
+   "colour": "#b5653f",
+   "rate_m2": 900
+  },
+  {
+   "id": "kota_stone",
+   "name": "Kota stone",
+   "pattern": "stone",
+   "colour": "#8f8d6b",
+   "rate_m2": 800
+  },
+  {
+   "id": "polished_concrete",
+   "name": "Polished concrete",
+   "pattern": "concrete",
+   "colour": "#9e9e9e",
+   "rate_m2": 950
+  },
+  {
+   "id": "anti_skid",
+   "name": "Anti-skid ceramic",
+   "pattern": "tile_small",
+   "colour": "#cfd8dc",
+   "rate_m2": 950
+  }
+ ],
+ "themes": [
+  {
+   "id": "modern",
+   "name": "Modern",
+   "wall": "paint_warm_white",
+   "floor": "vitrified_600",
+   "wet_wall": "wall_tile",
+   "wet_floor": "anti_skid",
+   "feature": "wallpaper_geometric",
+   "extras": {
+    "living": [
+     "plant_monstera",
+     "wall_art_abstract",
+     "floor_lamp",
+     "vase_table"
+    ],
+    "bedroom": [
+     "plant_snake",
+     "table_lamp"
+    ],
+    "dining": [
+     "vase_table",
+     "wall_art_abstract"
+    ],
+    "kitchen": [
+     "plant_succulent"
+    ],
+    "bathroom": []
+   }
+  },
+  {
+   "id": "minimal",
+   "name": "Minimal",
+   "wall": "paint_warm_white",
+   "floor": "marble_white",
+   "wet_wall": "wall_tile",
+   "wet_floor": "anti_skid",
+   "feature": null,
+   "extras": {
+    "living": [
+     "buddha_floor",
+     "plant_fiddle"
+    ],
+    "bedroom": [
+     "plant_snake"
+    ],
+    "dining": [
+     "vase_table"
+    ],
+    "kitchen": [],
+    "bathroom": []
+   }
+  },
+  {
+   "id": "traditional",
+   "name": "Traditional Indian",
+   "wall": "lime_plaster",
+   "floor": "kota_stone",
+   "wet_wall": "wall_tile",
+   "wet_floor": "anti_skid",
+   "feature": "paint_terracotta",
+   "extras": {
+    "living": [
+     "pooja_unit",
+     "urli",
+     "plant_areca",
+     "wall_art_madhubani",
+     "ganesha_idol"
+    ],
+    "bedroom": [
+     "plant_tulsi",
+     "table_lamp"
+    ],
+    "dining": [
+     "mirror_round"
+    ],
+    "kitchen": [
+     "plant_tulsi"
+    ],
+    "bathroom": []
+   }
+  },
+  {
+   "id": "scandinavian",
+   "name": "Scandinavian",
+   "wall": "paint_warm_white",
+   "floor": "wood_laminate",
+   "wet_wall": "wall_tile",
+   "wet_floor": "anti_skid",
+   "feature": "paint_sage",
+   "extras": {
+    "living": [
+     "plant_fiddle",
+     "vase_tall",
+     "floor_lamp",
+     "plant_pothos",
+     "wall_art_abstract"
+    ],
+    "bedroom": [
+     "plant_monstera",
+     "table_lamp"
+    ],
+    "dining": [
+     "plant_succulent",
+     "wall_clock"
+    ],
+    "kitchen": [
+     "plant_succulent"
+    ],
+    "bathroom": []
+   }
+  },
+  {
+   "id": "industrial",
+   "name": "Industrial",
+   "wall": "concrete_finish",
+   "floor": "polished_concrete",
+   "wet_wall": "wall_tile",
+   "wet_floor": "anti_skid",
+   "feature": "exposed_brick",
+   "extras": {
+    "living": [
+     "green_wall",
+     "floor_lamp",
+     "plant_snake"
+    ],
+    "bedroom": [
+     "plant_fiddle",
+     "table_lamp"
+    ],
+    "dining": [
+     "wall_clock"
+    ],
+    "kitchen": [],
+    "bathroom": []
+   }
+  }
+ ],
+ "room_kinds": {
+  "bedroom": [
+   "bed",
+   "wardrobe",
+   "side_table"
+  ],
+  "living": [
+   "sofa",
+   "tv_unit",
+   "coffee_table",
+   "rug",
+   "armchair"
+  ],
+  "dining": [
+   "dining_set",
+   "sideboard"
+  ],
+  "kitchen": [
+   "counter",
+   "fridge"
+  ],
+  "bathroom": [
+   "wc",
+   "basin",
+   "shower"
+  ]
+ }
+}

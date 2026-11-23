@@ -148,3 +148,17 @@ class LayoutRating(Base):
     comment: Mapped[str] = mapped_column(String(2000), default="")
     generator_version: Mapped[str] = mapped_column(String(20))
     at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
+class OptionInterior(Base):
+    """Saved interior design of an option (ARCH-156): finishes and placed items, one per option.
+    revision guards against two people overwriting each other's edits."""
+
+    __tablename__ = "option_interiors"
+    option_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("design_options.id"), primary_key=True)
+    org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), index=True)
+    data: Mapped[dict[str, Any]] = mapped_column(JSON)
+    catalog_version: Mapped[str] = mapped_column(String(20))
+    revision: Mapped[int] = mapped_column(default=1)
+    updated_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow)
