@@ -49,6 +49,7 @@ CAN = {
     "create_project": {"admin", "project_manager"},
     "create_brief": {"admin", "project_manager", "contributor"},
     "rate_layout": {"admin", "project_manager", "reviewer"},
+    "design_interior": {"admin", "project_manager", "contributor"},
 }
 
 
@@ -120,8 +121,11 @@ class Principal:
     role: str
     session_id: uuid.UUID
 
+    def can(self, permission: str) -> bool:
+        return self.role in CAN[permission]
+
     def require(self, permission: str) -> None:
-        if self.role not in CAN[permission]:
+        if not self.can(permission):
             raise HTTPException(403, f"role '{self.role}' cannot {permission.replace('_', ' ')}")
 
 
