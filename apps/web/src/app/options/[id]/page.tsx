@@ -9,6 +9,7 @@ import RateLayout from "@/components/RateLayout";
 import Shell from "@/components/Shell";
 import { api, errorText } from "@/lib/api";
 import { money, type OptionDetail } from "@/lib/types";
+import { area, areaLabel, checkText, len, qtyText, rateText, useUnit } from "@/lib/units";
 
 const Model3D = dynamic(() => import("@/components/Model3D"), { ssr: false });
 
@@ -20,6 +21,7 @@ export default function OptionPage() {
   const [error, setError] = useState("");
   const [floor, setFloor] = useState(0);
   const [floor3d, setFloor3d] = useState<number | "all">(0);
+  const unit = useUnit();
 
   useEffect(() => {
     api<OptionDetail>(`/options/${id}`).then(setOpt, (e) => setError(errorText(e)));
@@ -104,7 +106,7 @@ export default function OptionPage() {
             )}
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element -- server-rendered SVG behind auth */}
-          <img src={`/api/v1/options/${opt.id}/plans/${floor}.svg`} alt={`Plan of floor ${floor}`} className="w-full" />
+          <img src={`/api/v1/options/${opt.id}/plans/${floor}.svg?units=${unit}`} alt={`Plan of floor ${floor}`} className="w-full" />
         </section>
         <section className="card">
           <div className="mb-2 flex items-center justify-between">
@@ -133,7 +135,7 @@ export default function OptionPage() {
                 <tr key={l.item_id} className="border-b border-stone-100">
                   <td className="py-1">{l.description}</td>
                   <td className="py-1 text-right text-stone-500">
-                    {l.qty} {l.unit} × {l.rate}
+                    {qtyText(l.qty, l.unit, unit)} × {rateText(l.rate, l.unit, unit)}
                   </td>
                   <td className="py-1 text-right">{money(l.amount, est.currency)}</td>
                 </tr>
@@ -161,8 +163,8 @@ export default function OptionPage() {
               <tr>
                 <th>Floor</th>
                 <th>Room</th>
-                <th className="text-right">Size (m)</th>
-                <th className="text-right">Area (m²)</th>
+                <th className="text-right">Size ({unit})</th>
+                <th className="text-right">Area ({areaLabel(unit)})</th>
               </tr>
             </thead>
             <tbody>
@@ -171,9 +173,9 @@ export default function OptionPage() {
                   <td className="py-1">{r.floor}</td>
                   <td className="py-1">{r.name}</td>
                   <td className="py-1 text-right">
-                    {r.width_m.toFixed(2)} × {r.depth_m.toFixed(2)}
+                    {len(r.width_m, unit)} × {len(r.depth_m, unit)}
                   </td>
-                  <td className="py-1 text-right">{r.area_m2.toFixed(1)}</td>
+                  <td className="py-1 text-right">{area(r.area_m2, unit)}</td>
                 </tr>
               ))}
             </tbody>
@@ -188,7 +190,7 @@ export default function OptionPage() {
                 <tr key={q.item_id} className="border-b border-stone-100" title={q.method}>
                   <td className="py-1">{q.description}</td>
                   <td className="py-1 text-right">
-                    {q.qty} {q.unit}
+                    {qtyText(q.qty, q.unit, unit)}
                   </td>
                 </tr>
               ))}
@@ -206,10 +208,7 @@ export default function OptionPage() {
                   <tr key={i} className="border-b border-stone-100">
                     <td className="py-1">{c.rule_id}</td>
                     <td className="py-1 text-stone-500">{c.subject}</td>
-                    <td className="py-1 text-right text-stone-500">
-                      {c.measured ?? ""}
-                      {c.limit !== null ? ` / ${c.limit}` : ""} {c.unit}
-                    </td>
+                    <td className="py-1 text-right text-stone-500">{checkText(c, unit)}</td>
                     <td className={`py-1 text-right ${RESULT_STYLE[c.result]}`}>{c.result}</td>
                   </tr>
                 ))}

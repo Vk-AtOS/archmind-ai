@@ -93,6 +93,11 @@ def test_full_flow_brief_to_options_and_exports(client: TestClient) -> None:
     assert len(detail["layout"]["floors"]) == 2
     svg = a.get(f"/api/v1/options/{opts[0]['id']}/plans/0.svg")
     assert svg.status_code == 200 and svg.headers["content-type"].startswith("image/svg+xml")
+    assert " m²" in svg.text and " m</text>" in svg.text
+    ft = a.get(f"/api/v1/options/{opts[0]['id']}/plans/0.svg?units=ft").text
+    assert " ft²" in ft and " ft</text>" in ft and " m²" not in ft
+    assert " mm</text>" in a.get(f"/api/v1/options/{opts[0]['id']}/plans/0.svg?units=mm").text
+    assert a.get(f"/api/v1/options/{opts[0]['id']}/plans/0.svg?units=yd").status_code == 422
     ifc = a.get(f"/api/v1/options/{opts[0]['id']}/model.ifc")
     assert ifc.status_code == 200 and ifc.text.startswith("ISO-10303-21")
     assert len(a.get(f"/api/v1/projects/{pr['id']}/briefs").json()) == 1

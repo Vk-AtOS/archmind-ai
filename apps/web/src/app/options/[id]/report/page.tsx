@@ -6,12 +6,15 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api, errorText } from "@/lib/api";
+import UnitPicker from "@/components/UnitPicker";
 import { money, type OptionDetail } from "@/lib/types";
+import { area, areaLabel, checkText, len, qtyText, rateText, useUnit } from "@/lib/units";
 
 export default function Report() {
   const { id } = useParams<{ id: string }>();
   const [opt, setOpt] = useState<OptionDetail | null>(null);
   const [error, setError] = useState("");
+  const unit = useUnit();
 
   useEffect(() => {
     api<OptionDetail>(`/options/${id}`).then(setOpt, (e) => setError(errorText(e)));
@@ -31,6 +34,7 @@ export default function Report() {
         <button onClick={() => history.back()} className="btn-secondary">
           ← Back
         </button>
+        <UnitPicker />
         <button onClick={() => window.print()} className="btn" data-testid="print">
           Print / Save as PDF
         </button>
@@ -59,7 +63,7 @@ export default function Report() {
         <section key={f.level} className="mb-6 break-inside-avoid">
           <h2 className="mb-2 text-lg font-medium">{f.level === 0 ? "Ground floor plan" : `Floor ${f.level} plan`}</h2>
           {/* eslint-disable-next-line @next/next/no-img-element -- server-rendered SVG behind auth */}
-          <img src={`/api/v1/options/${opt.id}/plans/${f.level}.svg`} alt={`Plan of floor ${f.level}`} className="mx-auto w-full print:max-h-[190mm] print:w-auto" />
+          <img src={`/api/v1/options/${opt.id}/plans/${f.level}.svg?units=${unit}`} alt={`Plan of floor ${f.level}`} className="mx-auto w-full print:max-h-[190mm] print:w-auto" />
         </section>
       ))}
 
@@ -70,8 +74,8 @@ export default function Report() {
             <tr>
               <th>Floor</th>
               <th>Room</th>
-              <th className="text-right">Size (m)</th>
-              <th className="text-right">Area (m²)</th>
+              <th className="text-right">Size ({unit})</th>
+              <th className="text-right">Area ({areaLabel(unit)})</th>
             </tr>
           </thead>
           <tbody>
@@ -80,9 +84,9 @@ export default function Report() {
                 <td>{r.floor}</td>
                 <td>{r.name}</td>
                 <td className="text-right">
-                  {r.width_m.toFixed(2)} × {r.depth_m.toFixed(2)}
+                  {len(r.width_m, unit)} × {len(r.depth_m, unit)}
                 </td>
-                <td className="text-right">{r.area_m2.toFixed(1)}</td>
+                <td className="text-right">{area(r.area_m2, unit)}</td>
               </tr>
             ))}
           </tbody>
@@ -98,7 +102,7 @@ export default function Report() {
               <tr key={l.item_id} className="border-b border-stone-200">
                 <td>{l.description}</td>
                 <td className="text-right text-stone-500">
-                  {l.qty} {l.unit} × {l.rate}
+                  {qtyText(l.qty, l.unit, unit)} × {rateText(l.rate, l.unit, unit)}
                 </td>
                 <td className="text-right">{money(l.amount, est.currency)}</td>
               </tr>
@@ -123,7 +127,7 @@ export default function Report() {
               <tr key={q.item_id} className="border-b border-stone-200">
                 <td>{q.description}</td>
                 <td className="text-right">
-                  {q.qty} {q.unit}
+                  {qtyText(q.qty, q.unit, unit)}
                 </td>
                 <td className="pl-3 text-xs text-stone-500">{q.method}</td>
               </tr>
@@ -140,10 +144,7 @@ export default function Report() {
               <tr key={i} className="border-b border-stone-200">
                 <td>{c.rule_id}</td>
                 <td className="text-stone-500">{c.subject}</td>
-                <td className="text-right text-stone-500">
-                  {c.measured ?? ""}
-                  {c.limit !== null ? ` / ${c.limit}` : ""} {c.unit}
-                </td>
+                <td className="text-right text-stone-500">{checkText(c, unit)}</td>
                 <td className="text-right">{c.result}</td>
                 <td className="pl-2 text-xs text-stone-500">{c.rule_status}</td>
               </tr>

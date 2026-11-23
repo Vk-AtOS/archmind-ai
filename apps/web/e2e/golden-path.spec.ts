@@ -82,3 +82,36 @@ test("invalid brief shows a readable error", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: /plot allows|buildable/ })).toBeVisible();
   await expect(page.getByText("Value error")).toHaveCount(0);
 });
+
+test("units switch between metres, feet, cm and mm", async ({ page }) => {
+  const email = process.env.E2E_EMAIL;
+  const password = process.env.E2E_PASSWORD;
+  test.skip(!email || !password, "set E2E_EMAIL and E2E_PASSWORD");
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(email!);
+  await page.getByLabel("Password").fill(password!);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByLabel("Project name").fill(`E2E feet ${Date.now()}`);
+  await page.getByRole("button", { name: "New project" }).click();
+  await page.getByRole("link", { name: /E2E feet/ }).first().click();
+
+  // Brief typed in feet is sent in metres and read back in feet.
+  await page.getByTestId("units").selectOption("ft");
+  await page.getByLabel("Plot width (ft)").fill("40");
+  await page.getByLabel("Plot depth (ft)").fill("50");
+  await page.getByRole("button", { name: "Generate options" }).click();
+  await expect(page.getByText("plot 40.00 ft × 50.00 ft")).toBeVisible();
+  await expect(page.getByTestId("option-card").first()).toContainText("ft² built-up");
+
+  await page.getByTestId("option-card").first().click();
+  await expect(page.getByText("Size (ft)", { exact: true })).toBeVisible();
+  await expect(page.getByAltText("Plan of floor 0")).toHaveAttribute("src", /units=ft/);
+
+  // Millimetres: lengths in mm, areas stay in m²; the choice survives a reload.
+  await page.getByTestId("units").selectOption("mm");
+  await expect(page.getByText("Size (mm)", { exact: true })).toBeVisible();
+  await expect(page.getByText("Area (m²)", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("units")).toHaveValue("mm");
+  await page.getByTestId("units").selectOption("m");
+});

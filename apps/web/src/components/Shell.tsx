@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import UnitPicker from "@/components/UnitPicker";
 import { api } from "@/lib/api";
 import type { Me } from "@/lib/types";
 
@@ -27,6 +28,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </Link>
           {me && (
             <div className="flex items-center gap-3 text-sm text-stone-600">
+              <UnitPicker />
               {me.role === "admin" && (
                 <Link href="/settings" className="hover:underline">
                   Settings
