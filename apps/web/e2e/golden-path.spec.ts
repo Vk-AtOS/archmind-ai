@@ -47,6 +47,12 @@ test("brief to checked design with estimate and IFC", async ({ page }) => {
   await page.getByRole("button", { name: "Record" }).click();
   await expect(page.getByTestId("actual-costs")).toContainText("%");
 
+  // Layout rating (ARCH-155): admin rates, averages appear.
+  await page.getByLabel("Usability").selectOption("4");
+  await page.getByLabel("Comment").fill("Good light, tight kitchen");
+  await page.getByRole("button", { name: "Save rating" }).click();
+  await expect(page.getByTestId("rating-averages")).toContainText("4.0");
+
   // Printable report (ARCH-87): same figures as the option page, with sources and limits.
   await page.getByTestId("report-link").click();
   await expect(page.getByTestId("report-total")).toContainText("₹");

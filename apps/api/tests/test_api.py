@@ -207,3 +207,24 @@ def test_actual_cost_needs_opt_in_and_reports_estimate_error(client: TestClient)
     assert viewer.put("/api/v1/org/settings", json={"data_use_opt_in": False}).status_code == 403
     other, _ = org_admin(client)
     assert other.get(url).status_code == 404
+
+
+def test_reviewers_rate_layouts_and_summary_groups_by_generator(client: TestClient) -> None:
+    a, _ = org_admin(client)
+    pr = a.post("/api/v1/projects", json={"name": "Rated"}).json()
+    opt = a.post(f"/api/v1/projects/{pr['id']}/briefs", json=BRIEF).json()["options"][0]
+    url = f"/api/v1/options/{opt['id']}/rating"
+    scores = {"usability": 4, "circulation": 3, "daylight": 5, "buildability": 4, "client_ready": 2}
+    reviewer = add_user(a, "reviewer")
+    assert reviewer.put(url, json={**scores, "comment": "kitchen too narrow"}).status_code == 200
+    assert (
+        reviewer.put(url, json={**scores, "client_ready": 3}).status_code == 200
+    )  # replaces, not duplicates
+    assert len(a.get(f"/api/v1/options/{opt['id']}/ratings").json()) == 1
+    assert reviewer.put(url, json={**scores, "usability": 6}).status_code == 422
+    assert add_user(a, "contributor").put(url, json=scores).status_code == 403
+    summary = a.get("/api/v1/ratings/summary").json()
+    assert summary[0]["ratings"] == 1 and summary[0]["averages"]["client_ready"] == 3.0
+    other, _ = org_admin(client)
+    assert other.put(url, json=scores).status_code == 404
+    assert other.get("/api/v1/ratings/summary").json() == []

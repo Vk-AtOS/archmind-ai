@@ -48,6 +48,7 @@ CAN = {
     "manage_users": {"admin"},
     "create_project": {"admin", "project_manager"},
     "create_brief": {"admin", "project_manager", "contributor"},
+    "rate_layout": {"admin", "project_manager", "reviewer"},
 }
 
 
