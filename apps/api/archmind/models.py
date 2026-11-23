@@ -129,3 +129,22 @@ class ActualCost(Base):
     note: Mapped[str] = mapped_column(String(1000), default="")
     recorded_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
     at: Mapped[datetime] = mapped_column(default=utcnow)
+
+
+class LayoutRating(Base):
+    """Architect rating of a generated option (ARCH-155). One current rating per rater per option."""
+
+    __tablename__ = "layout_ratings"
+    __table_args__ = (UniqueConstraint("option_id", "rater_id"),)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=_id)
+    org_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), index=True)
+    option_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("design_options.id"), index=True)
+    rater_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    usability: Mapped[int]
+    circulation: Mapped[int]
+    daylight: Mapped[int]
+    buildability: Mapped[int]
+    client_ready: Mapped[int]
+    comment: Mapped[str] = mapped_column(String(2000), default="")
+    generator_version: Mapped[str] = mapped_column(String(20))
+    at: Mapped[datetime] = mapped_column(default=utcnow)

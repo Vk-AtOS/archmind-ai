@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ActualCost from "@/components/ActualCost";
+import RateLayout from "@/components/RateLayout";
 import Shell from "@/components/Shell";
 import { api, errorText } from "@/lib/api";
 import { money, type OptionDetail } from "@/lib/types";
@@ -150,6 +151,8 @@ export default function OptionPage() {
         </section>
 
         <ActualCost optionId={opt.id} currency={est.currency} />
+
+        <RateLayout optionId={opt.id} />
 
         <section className="card">
           <h2 className="mb-3 font-medium">Rooms</h2>
